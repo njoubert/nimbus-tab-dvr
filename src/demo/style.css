@@ -59,3 +59,55 @@ pre#log {
   overflow: auto;
   font-size: 12px;
 }
+
+h2 {
+  font-size: 17px;
+  margin: 20px 0 6px;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+  text-align: left;
+}
+
+tr[data-state='recording'] td.state {
+  color: #b00020;
+  font-weight: 600;
+}
+
+tr[data-state='finalized'] td.state {
+  color: #1b7f3b;
+}
+
+#backend[data-state='down'],
+#extension[data-state='missing'] {
+  color: #b00020;
+}
+
+video {
+  max-width: 100%;
+  background: #000;
+  border: 1px solid #ccc;
+}
+
+.hint {
+  background: #fff3cd;
+  border: 1px solid #ffe08a;
+  padding: 8px 12px;
+}
+
+kbd {
+  font: inherit;
+  background: #eee;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  padding: 0 5px;
+}

@@ -1,7 +1,7 @@
 # Nimbus Tab DVR: notes for agents
 
 A digital video recorder for a browser tab: a Manifest V3 Chrome extension in TypeScript that records the tab a host web application asks it to, and a demo application that stands in for that host.
-At present it is the capture feasibility spike, proven and reported; the application contract, the upload path and the distribution channel are the next plans.
+The capture feasibility spike is proven and reported, and the demo that sells the concept is built: each chunk uploads to a demo backend that remuxes with ffmpeg and plays it back; the application contract waits behind it.
 [README.md](README.md) is the user-facing description; read it first and keep it true when behaviour changes.
 This file is the rest: how to work here, and what has already been decided.
 
@@ -26,6 +26,7 @@ The prek hook enforces the line rule; the rest is on you.
   `prek run --all-files` means every tracked file, so `git add` a new file before `./build.sh check` or the commit hook will be the first thing to see it.
 - **The dependency budget is TypeScript, Vite and Playwright**, plus type-only packages.
   Adding anything else is a decision to raise, not a line in `package.json`.
+  `ffmpeg` is a tool on the Mac that `provision.sh` installs, used by the demo backend and the tests, not a package.
 - **Never disable a hook to get past it.** Shellcheck runs at its default severity, so `A && B || true` is flagged; write an `if`.
 - **Documentation tasks are documentation-only.** When the task is to record something, the deliverable is the document; offer the implementation as a next step and wait.
 - **The unanswered questions in [docs/GRILLING.md](docs/GRILLING.md) are unanswered.** Do not build past one; ask it.
@@ -56,8 +57,9 @@ src/
   shared/protocol.ts      the messages between page, content script, service worker and offscreen document
   extension/              the Manifest V3 extension: service worker, content script, offscreen document, console page
     public/manifest.json  the manifest, with the public key that fixes the extension id
-  demo/                   the demo host application: a landing page and a recording page
+  demo/                   the demo host application: a landing page that lists and plays the backend's recordings, and a recording page
 tests/spike.spec.ts       the capture feasibility spike, as a Playwright test that prints FINDING: lines
+tests/demo.spec.ts        the demo's beats as a test: chunks landing, stop finalizing, reload rejoining, tab close landing
 vite.extension.config.ts  four entries by name, no plugin
 vite.demo.config.ts       two pages
 scripts/
@@ -67,10 +69,10 @@ scripts/
   check-one-sentence-per-line.sh   the markdown line rule, wired into prek
   lib/output.sh                    the shared print_* helpers every script sources
   lib/one-sentence-per-line.awk    the check itself, in awk so it needs no toolchain
-  spike/serve.mjs                  serves the built demo on 5173 and the packed extension on 8765
+  demo/serve.mjs                   the demo backend: the demo on 5173 with the recordings API, the packed extension on 8765
+  demo/chrome.sh                   a real Chrome on a throwaway profile, the extension's id allowlisted for capture
   spike/pack.sh                    packs a .crx with Chrome and writes the update manifest
   spike/policy.sh                  install | show | remove the force-install policy on this Mac
-  spike/chrome.sh                  a real Chrome on a throwaway profile that still reads the policies
   spike/managed-probe.mjs          reads what a real Chrome made of the policies, over the DevTools protocol
 docs/
   WRITING_STYLE.md        binds everything written here
@@ -97,6 +99,8 @@ docs/
 | `./build.sh check` | The gate CI runs: `prek run --all-files`, then `tsc --noEmit` |
 | `./build.sh fmt` | Declared and does nothing; no formatter is in the budget yet |
 | `./build.sh clean` | Removes `dist`, `test-results` and `playwright-report` |
+| `node scripts/demo/serve.mjs` | The demo backend, which Playwright also starts for the tests; recordings live in `.build-demo/recordings/` |
+| `scripts/demo/chrome.sh` | Google Chrome on a throwaway profile with the allowlist flag; the extension is loaded unpacked by hand, once |
 | `scripts/spike/*` | The managed-path tools; each reads its own `# Usage:` header |
 
 **`fmt` is declared and does nothing**, because no formatter is in the budget; it is one function in `build.sh` with a TODO.
@@ -109,6 +113,11 @@ docs/
 - A MediaRecorder WebM carries no duration or cues; measure a file by decoding it, and let the backend remux.
 - `osascript` keystrokes need an Accessibility grant for the terminal, which an agent cannot give itself; with it, a real press of the `commands` shortcut is the invocation Chrome wants, and Playwright's keyboard never is.
 - A content script is a classic script: it may import types and nothing else, and `build.sh` fails the build if an import survives.
+
+**Traps the demo found**, on 2026-09-10:
+
+- A closing tab ends the captured track before `tabs.onRemoved` fires, so the service worker's stop on that path finds the offscreen document already finished; both paths end in the same finished record, and neither may treat the other's win as a failure.
+- The demo backend and the demo application share one origin on purpose, so the page needs no CORS; the extension's `chrome-extension://` origin does, and `host_permissions` for localhost is what lets the offscreen document post there.
 
 **Script output follows `../weshootfilm/provision.sh`**, so every script on this machine reads the same.
 `print_header` opens a section, `print_success` (✓), `print_warning` (⚠), `print_error` (✗) and `print_info` carry the lines, and the EXIT trap prints a closing banner so no run can end on an ambiguous note.

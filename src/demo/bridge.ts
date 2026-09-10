@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 // What a host application needs to talk to the extension: post a request on the window,
-// wait for the reply that carries the same requestId. This is the whole client.
+// wait for the reply that carries the same requestId, and listen for the events the
+// extension posts unasked. This is the whole client.
 
-import type { AppMessage, AppRequest, ExtensionMessage, ExtensionReply } from '../shared/protocol';
+import type { AppMessage, AppRequest, ExtensionEvent, ExtensionMessage, ExtensionReply } from '../shared/protocol';
 
 const APP_SOURCE = 'nimbus-tab-dvr/app';
 const EXTENSION_SOURCE = 'nimbus-tab-dvr/extension';
@@ -24,15 +25,27 @@ export function request(body: Body, timeoutMs = 15_000): Promise<ExtensionReply>
     function onMessage(event: MessageEvent) {
       if (event.source !== window) return;
       const data = event.data as Partial<ExtensionMessage> | null;
-      if (!data || data.source !== EXTENSION_SOURCE || data.requestId !== requestId) return;
+      if (!data || data.source !== EXTENSION_SOURCE || !('requestId' in data) || data.requestId !== requestId) return;
       clearTimeout(timer);
       window.removeEventListener('message', onMessage);
       const { source: _source, ...reply } = data as ExtensionMessage;
-      resolve(reply);
+      resolve(reply as ExtensionReply);
     }
     window.addEventListener('message', onMessage);
     const message = { source: APP_SOURCE, requestId, ...body } as AppMessage;
     window.postMessage(message, window.location.origin);
+  });
+}
+
+// The extension posts RECORDING_FINALIZED and RECORDING_ENDED with no requestId, because no
+// request asked for them.
+export function onExtensionEvent(handler: (event: ExtensionEvent) => void): void {
+  window.addEventListener('message', (event: MessageEvent) => {
+    if (event.source !== window) return;
+    const data = event.data as Partial<ExtensionMessage> | null;
+    if (!data || data.source !== EXTENSION_SOURCE || 'requestId' in data) return;
+    const { source: _source, ...rest } = data as ExtensionMessage;
+    handler(rest as ExtensionEvent);
   });
 }
 
@@ -56,7 +69,7 @@ export function log(line: string): void {
   pre.textContent += `${new Date().toISOString().slice(11, 23)} ${line}\n`;
 }
 
-export function showReply(element: HTMLElement, reply: ExtensionReply): void {
+export function showReply(element: HTMLElement, reply: ExtensionReply | ExtensionEvent): void {
   element.dataset.type = reply.type;
   element.dataset.code = reply.type === 'RECORDING_ERROR' ? reply.code : '';
   element.textContent = JSON.stringify(reply);
@@ -89,4 +102,32 @@ export async function announceExtension(): Promise<void> {
     el.dataset.state = 'missing';
     el.textContent = 'no extension answered on this page';
   }
+}
+
+// What the backend knows about a recording; the demo server's meta.json, as it lists them.
+export interface BackendRecording {
+  id: string;
+  key: string;
+  mimeType: string;
+  startedAt: number;
+  state: 'recording' | 'finalized' | 'failed';
+  chunks: number;
+  bytes: number;
+  lastChunkAt?: number;
+  finalizedAt?: number;
+  durationSeconds?: number | null;
+  reason?: string;
+  url?: string;
+}
+
+export async function listBackendRecordings(): Promise<BackendRecording[]> {
+  const response = await fetch('/api/recordings', { cache: 'no-store' });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  return (await response.json()) as BackendRecording[];
+}
+
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }

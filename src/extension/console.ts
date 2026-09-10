@@ -1,8 +1,8 @@
 // Copyright (C) 2026 Niels Joubert
 // SPDX-License-Identifier: MIT
 
-// An extension page for the spike: lists what the spool holds, assembles a recording into
-// one file, and can kill the offscreen document to simulate a crash. It shares the
+// An extension page for development: lists what the spool holds, assembles a recording into
+// one file, sets the backend override, and can kill the offscreen document to simulate a crash. It shares the
 // extension's origin, so it reads the same IndexedDB the offscreen document writes.
 
 import type { RecordingRecord, Status, ToServiceWorker } from '../shared/protocol';
@@ -56,6 +56,7 @@ async function render(): Promise<void> {
       cell(recording.mimeType),
       cell(String(recording.chunks)),
       cell(String(recording.bytes)),
+      cell(String(recording.uploaded ?? 0)),
     );
     const actions = document.createElement('td');
     const downloadButton = document.createElement('button');
@@ -73,6 +74,21 @@ async function render(): Promise<void> {
 }
 
 document.querySelector('#refresh')!.addEventListener('click', () => void render());
+
+// The backend override for development; a deployment sets apiBaseUrl in managed configuration.
+const apiInput = document.querySelector<HTMLInputElement>('#api-base-url')!;
+const apiNote = document.querySelector<HTMLSpanElement>('#api-note')!;
+void chrome.storage.local.get('apiBaseUrl').then((stored) => {
+  apiInput.value = typeof stored.apiBaseUrl === 'string' ? stored.apiBaseUrl : '';
+});
+document.querySelector('#save-api-base-url')!.addEventListener('click', () => {
+  const value = apiInput.value.trim();
+  const write = value ? chrome.storage.local.set({ apiBaseUrl: value }) : chrome.storage.local.remove('apiBaseUrl');
+  void write.then(() => {
+    apiNote.textContent = value ? `saved ${value}` : 'cleared; the default applies';
+    void render();
+  });
+});
 document.querySelector('#close-offscreen')!.addEventListener('click', () => {
   chrome.offscreen.closeDocument().then(
     () => {

@@ -5,6 +5,7 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "apiBaseUrl": { "type": "string" },
     "capture": {
       "type": "object",
       "properties": {

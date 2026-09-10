@@ -66,6 +66,15 @@ export async function putChunk(chunk: ChunkRecord): Promise<void> {
   await done(tx);
 }
 
+export async function updateChunk(recordingId: string, sequence: number, patch: Partial<ChunkRecord>): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction('chunks', 'readwrite');
+  const store = tx.objectStore('chunks');
+  const existing = await result(store.get([recordingId, sequence]) as IDBRequest<ChunkRecord | undefined>);
+  if (existing) store.put({ ...existing, ...patch });
+  await done(tx);
+}
+
 export async function listRecordings(): Promise<RecordingRecord[]> {
   const db = await openDb();
   const all = await result(db.transaction('recordings').objectStore('recordings').getAll() as IDBRequest<RecordingRecord[]>);

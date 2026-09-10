@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tab DVR demo: recording</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
@@ -12,6 +13,9 @@
       <h1>Tab DVR demo: this page is being recorded</h1>
       <p id="extension" data-state="looking">looking for the extension</p>
       <p>Recording: <code id="status" data-type="">waiting</code></p>
+      <p id="hint" class="hint" hidden>
+        Chrome has not been told this tab may be captured. Press <kbd>Cmd+Shift+Y</kbd> once on this tab, then Start again.
+      </p>
       <p>
         <button id="done">Done</button>
         <button id="retry">Start again</button>

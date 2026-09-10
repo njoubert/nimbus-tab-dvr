@@ -293,8 +293,10 @@ test('Q1b to Q3: one invocation, then unattended cycles, reload, kill, and audio
     await page.waitForTimeout(2000);
     await page.reload();
     const afterReload = await statusReply(page);
-    finding(`START_RECORDING sent again by the reloaded page: ${JSON.stringify(afterReload)}`);
-    expect(afterReload.code).toBe('ALREADY_RECORDING');
+    finding(`the reloaded page asked for status and got: ${JSON.stringify(afterReload)}`);
+    expect(afterReload.type).toBe('RECORDING_STATUS');
+    expect(afterReload.state).toBe('RECORDING');
+    expect(afterReload.recordingId).toBe(started.recordingId);
     const during = await probe(page);
     finding(`probe while the reloaded page's recording is live: ${during.ok ? 'GRANTED' : 'refused'} (${during.detail})`);
     await page.waitForTimeout(2000);
