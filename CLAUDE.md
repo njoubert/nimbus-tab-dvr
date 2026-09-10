@@ -175,6 +175,6 @@ Reply where the comment was left, with `scripts/pr-review.sh reply THREAD_ID BOD
 
 ## What is not decided yet
 
-**The distribution channel, the audio default, the upload path and the application contract are open**, and [docs/GRILLING.md](docs/GRILLING.md) holds the questions with the answers so far.
-The language, the runtime and the capture interface are settled there.
+**The audio default, the upload path and the application contract are open**, and [docs/GRILLING.md](docs/GRILLING.md) holds the questions with the answers so far.
+The language, the runtime, the capture interface and the distribution channel are settled there: development launches Chrome with `--allowlisted-extension-id`, and the client deploys through Jamf to managed Chrome, where a recording needs one invocation per tab.
 When another one is settled, the answer goes in that file, the affected code grows its real implementation, and this section shrinks.

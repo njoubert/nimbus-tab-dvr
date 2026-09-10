@@ -6,7 +6,7 @@
 
 <p align="center">
   A Manifest V3 Chrome extension that records the tab a host web application asks it to, with a demo application standing in for the host.
-  The capture feasibility spike is done and <a href="docs/reports/2026-09-09-2343-capture-feasibility-spike.md">reported</a>; the application contract, the upload path and the distribution channel come next.
+  The capture feasibility spike is done and <a href="docs/reports/2026-09-09-2343-capture-feasibility-spike.md">reported</a>; the application contract and the upload path come next, and the client deploys through Jamf to managed Chrome.
 </p>
 
 ```

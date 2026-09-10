@@ -38,6 +38,7 @@ The extension never has to produce a seekable file itself.
 **Answer:** `chrome.tabCapture.getMediaStreamId` from a Manifest V3 service worker, consumed by an offscreen document.
 Proven by [the spike report](reports/2026-09-09-2343-capture-feasibility-spike.md): Chrome grants capture to a tab the user has invoked the extension on, or to an extension whose id Chrome was launched with as `--allowlisted-extension-id`, and nothing else lifts that.
 One click per tab was accepted on 2026-09-09; the flag is the zero-click path where a launcher starts Chrome.
+Decided 2026-09-10: for demo and development, Chrome is launched with the flag, which is what the test does; in deployment the fleet's Chrome is not launched with a flag, so a recording needs one invocation per tab.
 
 **2b.** What happens when that interface is unavailable, denied by the user, or changed by a browser update?
 
@@ -86,8 +87,9 @@ Measured on 2026-09-09: a killed offscreen document kept 4.93 of about 6 seconds
 
 **Answer:** Force-installed by policy on the managed fleet.
 Chrome force-installs an extension that is not on the Chrome Web Store only on a machine it detects as enterprise managed, which on macOS means MDM enrolment; the spike recorded the refusal verbatim.
-So the choice is a Web Store listing, or a self-hosted `.crx` and update manifest on an enrolled fleet.
-Updates come from the same source.
+Decided 2026-09-10: the client pushes the extension with Jamf to its managed Chrome installs, so the machines are MDM-enrolled and the path is a self-hosted `.crx` and update manifest force-installed by policy, with the managed configuration alongside it.
+The Web Store is not needed.
+Updates come from the same update manifest.
 
 **5b.** What is signed, notarized, or reviewed by a store, and who holds the credentials?
 
