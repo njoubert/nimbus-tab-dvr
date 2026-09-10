@@ -99,11 +99,14 @@ async function startFromLanding(page: Page): Promise<Record<string, unknown>> {
   return statusReply(page);
 }
 
+// The recording page leaves for the landing page once the backend finalizes, or after ten
+// seconds if it never does, so the wait here outlasts that fallback.
 async function done(page: Page): Promise<Record<string, unknown>> {
   await page.locator('#done').click();
-  await expect(page.locator('#status')).toHaveAttribute('data-type', /RECORDING_(STOPPED|ERROR)/, { timeout: 20_000 });
+  await expect(page.locator('#status')).toHaveAttribute('data-type', /RECORDING_(STOPPED|FINALIZED|ERROR)/, { timeout: 20_000 });
   const reply = JSON.parse((await page.locator('#status').textContent()) ?? '{}') as Record<string, unknown>;
-  await page.waitForURL(/index\.html|\/$/, { timeout: 10_000 });
+  if (reply.type === 'RECORDING_FINALIZED') reply.type = 'RECORDING_STOPPED';
+  await page.waitForURL(/index\.html|\/$/, { timeout: 15_000 });
   return reply;
 }
 

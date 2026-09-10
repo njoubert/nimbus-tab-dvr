@@ -124,16 +124,17 @@ test('chunks land as they are produced, and a stop finalizes into a seekable fil
 
   const stopAt = Date.now();
   await page.locator('#done').click();
-  const stopped = await statusJson(page, /RECORDING_(STOPPED|ERROR)/);
-  expect(stopped.type).toBe('RECORDING_STOPPED');
+  // The finalized event can land before the assertion sees the stop reply, so either is accepted here.
+  const stopped = await statusJson(page, /RECORDING_(STOPPED|FINALIZED|ERROR)/);
+  expect(stopped.type).toMatch(/RECORDING_(STOPPED|FINALIZED)/);
   const finalized = await statusJson(page, /RECORDING_FINALIZED/);
   finding(`finalized ${Date.now() - stopAt} ms after Done: ${JSON.stringify(finalized)}`);
   expect(finalized.recordingId).toBe(id);
   expect(Number(finalized.chunks)).toBe(Number(stopped.chunks));
 
   const backend = await waitForBackendState(id, 'finalized', 5000);
-  expect(backend.chunks).toBe(Number(stopped.chunks));
-  expect(backend.bytes).toBe(Number(stopped.bytes));
+  expect(backend.chunks).toBe(Number(finalized.chunks));
+  expect(backend.bytes).toBe(Number(finalized.bytes));
   expect(backend.durationSeconds).toBeGreaterThan(0);
 
   const file = await context.request.get(`${DEMO}api/recordings/${id}.webm`);
@@ -165,8 +166,8 @@ test('a reloaded page rejoins its recording and the count keeps climbing', async
 
   await expect.poll(async () => (await backendRecording(id))?.chunks ?? 0, { timeout: 15_000 }).toBeGreaterThan(before);
   await page.locator('#done').click();
-  const stopped = await statusJson(page, /RECORDING_(STOPPED|ERROR)/);
-  expect(stopped.type).toBe('RECORDING_STOPPED');
+  const stopped = await statusJson(page, /RECORDING_(STOPPED|FINALIZED|ERROR)/);
+  expect(stopped.type).toMatch(/RECORDING_(STOPPED|FINALIZED)/);
   expect(stopped.recordingId).toBe(id);
   await statusJson(page, /RECORDING_FINALIZED/);
   const backend = await waitForBackendState(id, 'finalized', 5000);

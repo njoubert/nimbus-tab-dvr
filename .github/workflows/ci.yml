@@ -40,6 +40,10 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Install Playwright's Chromium
         run: npx playwright install chromium
+      # The demo backend remuxes with ffmpeg and the test measures with ffprobe; the runner
+      # image has neither, and Playwright's own ffmpeg download is not on the path.
+      - name: Install ffmpeg
+        run: brew install ffmpeg
       - name: Build
         run: ./build.sh
       - name: Test
@@ -47,6 +51,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: spike-results
+          name: test-results
           path: test-results/
           if-no-files-found: ignore
