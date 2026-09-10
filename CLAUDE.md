@@ -75,8 +75,10 @@ scripts/
   spike/policy.sh                  install | show | remove the force-install policy on this Mac
   spike/managed-probe.mjs          reads what a real Chrome made of the policies, over the DevTools protocol
 docs/
+  how-it-works.svg        the system diagram the README embeds, hand-authored SVG with its own background so it reads on GitHub in both themes
   WRITING_STYLE.md        binds everything written here
   GRILLING.md             the design questions and their answers
+  FAQ.md                  the questions a reader asks after the demo, answered against the code and what was measured
   plans/                  what will be built, agreed before it is built
   reports/                what happened, dated and never updated
   research/               what was established from primary sources, maintained
