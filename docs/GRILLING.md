@@ -40,6 +40,7 @@ Proven by [the spike report](reports/2026-09-09-2343-capture-feasibility-spike.m
 One click per tab was accepted on 2026-09-09; the flag is the zero-click path where a launcher starts Chrome.
 Decided 2026-09-10: for demo and development, Chrome is launched with the flag, which is what the test does; in deployment the fleet's Chrome is not launched with a flag, so a recording needs one invocation per tab.
 Measured 2026-09-10 in [the gesture ladder report](reports/2026-09-10-0005-gesture-ladder.md): the invocation is one press of the manifest's `commands` shortcut, Cmd+Shift+Y, and the grant it earns survives a reload of the page.
+Measured 2026-09-10 on Google Chrome 153.0.8010.37 with the extension loaded unpacked: the branded Chrome honours `--allowlisted-extension-id` too, so the demo runs in the fleet's browser with no press.
 
 **2b.** What happens when that interface is unavailable, denied by the user, or changed by a browser update?
 

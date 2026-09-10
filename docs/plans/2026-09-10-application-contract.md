@@ -6,7 +6,7 @@ Nothing here uploads anything; the spool stays IndexedDB and the console page.
 
 **Reframed on 2026-09-10, before any of it was built: the next goal is a demo that sells the concept to the client, not a contract set in stone.**
 The contract below is the working shape the demo speaks, and it may change once the client is in the conversation; manual or semi-automated demo setup is acceptable where a deployment would automate it.
-The order of work is to be re-argued against that goal before this plan is frozen, and the decisions below stand until then.
+The order was re-argued the same day in [the demo plan](2026-09-10-demo.md), which pulls status on load, the tab closing and the finalized message forward and leaves the rest here; the decisions below stand until the client changes them.
 
 ## Facts already checked
 
