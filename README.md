@@ -44,7 +44,7 @@ Capture is granted per tab, by one press of Cmd+Shift+Y or by the allowlist flag
 | [`scripts/demo/`](scripts/demo/) | The demo backend and the Chrome launcher |
 | [`tests/`](tests/) | The spike and the demo as Playwright tests |
 | [`scripts/`](scripts/) | The checks, the two-account GitHub wrappers, the spike's packing and policy tools, and the shared output helpers |
-| [`docs/`](docs/) | The writing style, the design questions, the system diagram, and the plans, reports and research |
+| [`docs/`](docs/) | The writing style, the design questions, the system diagram, [the FAQ](docs/FAQ.md), and the plans, reports and research |
 | [`CLAUDE.md`](CLAUDE.md) | How to work in this repository |
 
 ## Running the demo
@@ -63,7 +63,7 @@ A fleet's Chrome is not launched with the flag; there, one press of Cmd+Shift+Y 
 
 **No retries, no authorization, no application contract beyond what the demo speaks, no formatter.**
 The backend in this repository stands in for the client's; a backend that is down leaves the recording in IndexedDB, where the console page can still assemble it.
-[docs/GRILLING.md](docs/GRILLING.md) holds the questions with their answers so far, and [docs/plans/](docs/plans/) holds what is built next.
+[docs/FAQ.md](docs/FAQ.md) answers the questions a reader asks after the demo, [docs/GRILLING.md](docs/GRILLING.md) holds the design questions with their answers so far, and [docs/plans/](docs/plans/) holds what is built next.
 
 ## Licence
 
