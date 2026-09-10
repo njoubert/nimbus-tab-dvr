@@ -22,6 +22,7 @@ The prek hook enforces the line rule; the rest is on you.
 - **Be concise.** Short reports, no repetition, the salient facts only.
 - **Decisions, not options.** Surface the alternatives you rejected in one line each, then recommend.
 - **`prek` must pass.** `./provision.sh` installs the hooks; `./build.sh check` runs them over every file, and it must pass before you claim done.
+  `prek run --all-files` means every tracked file, so `git add` a new file before `./build.sh check` or the commit hook will be the first thing to see it.
 - **Never disable a hook to get past it.** Shellcheck runs at its default severity, so `A && B || true` is flagged; write an `if`.
 - **Documentation tasks are documentation-only.** When the task is to record something, the deliverable is the document; offer the implementation as a next step and wait.
 - **The unanswered questions in [docs/GRILLING.md](docs/GRILLING.md) are unanswered.** Do not build past one; ask it.
