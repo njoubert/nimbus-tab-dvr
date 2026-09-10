@@ -101,6 +101,7 @@ docs/
 | `./build.sh clean` | Removes `dist`, `test-results` and `playwright-report` |
 | `node scripts/demo/serve.mjs` | The demo backend, which Playwright also starts for the tests; recordings live in `.build-demo/recordings/` |
 | `scripts/demo/chrome.sh` | Google Chrome on a throwaway profile with the allowlist flag; the extension is loaded unpacked by hand, once |
+| `scripts/demo/chrome.sh --chromium` | The same demo in Playwright's Chromium, for a managed Mac whose Chrome policy blocks extensions |
 | `scripts/spike/*` | The managed-path tools; each reads its own `# Usage:` header |
 
 **`fmt` is declared and does nothing**, because no formatter is in the budget; it is one function in `build.sh` with a TODO.
@@ -118,6 +119,7 @@ docs/
 
 - A closing tab ends the captured track before `tabs.onRemoved` fires, so the service worker's stop on that path finds the offscreen document already finished; both paths end in the same finished record, and neither may treat the other's win as a failure.
 - The demo backend and the demo application share one origin on purpose, so the page needs no CORS; the extension's `chrome-extension://` origin does, and `host_permissions` for localhost is what lets the offscreen document post there.
+- Every Google Chrome channel and copy on a Mac reads the policies written for `com.google.Chrome`, so a second Chrome does not escape a managed block on extensions; Playwright's Chromium, a Chrome for Testing build, did not read a marker policy written there when measured on 2026-09-10, and it takes `--load-extension`.
 
 **Script output follows `../weshootfilm/provision.sh`**, so every script on this machine reads the same.
 `print_header` opens a section, `print_success` (✓), `print_warning` (⚠), `print_error` (✗) and `print_info` carry the lines, and the EXIT trap prints a closing banner so no run can end on an ambiguous note.

@@ -17,7 +17,7 @@
 ./build.sh check          # the gate CI runs: prek over every file, then tsc
 ./build.sh clean          # remove build products
 node scripts/demo/serve.mjs   # the demo backend: the demo on 5173 with the recordings API, the packed extension on 8765
-scripts/demo/chrome.sh        # a real Chrome on a throwaway profile, with the extension's id allowlisted for capture
+scripts/demo/chrome.sh        # a real Chrome on a throwaway profile, with the extension's id allowlisted for capture; --chromium for a managed Mac
 ```
 
 Work reaches `main` through a pull request, which prek enforces at commit and push time.
@@ -48,6 +48,7 @@ See [CLAUDE.md, "Landing work"](CLAUDE.md#landing-work-branches-and-pull-request
 3. On the landing page press Start.
    The recording page records itself; a second tab on the landing page shows the chunks landing; a reload of the recording page rejoins its recording; closing the tab still lands it; Done finalizes it, and Play scrubs it.
 
+On a managed Mac whose Chrome policy blocks extensions, `scripts/demo/chrome.sh --chromium` runs the demo in Playwright's Chromium instead, which takes the extension from the command line and reads no Google Chrome policy; every Google Chrome channel or copy on that Mac would read the same policies and inherit the block.
 The demo backend keeps its recordings in `.build-demo/recordings/` and needs `ffmpeg` on the path, which `./provision.sh` installs.
 A fleet's Chrome is not launched with the flag; there, one press of Cmd+Shift+Y on the tab is what allows capture, and the recording page says so when it is needed.
 
