@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 740" role="img" aria-label="Nimbus Tab DVR: a host page asks the extension's content script to start; the service worker validates the origin, asks Chrome for a tab capture stream id, and hands it to an offscreen document that encodes with MediaRecorder, writes every chunk to IndexedDB, then uploads it in order to the demo backend, which remuxes with ffmpeg at stop into a seekable file that the landing page plays.">
+  <!-- Copyright (C) 2026 Niels Joubert. SPDX-License-Identifier: MIT -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1c1c1c"/>
+    </marker>
+    <marker id="arrow-chunk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b8460e"/>
+    </marker>
+  </defs>
+  <rect width="1240" height="740" fill="#fafafa"/>
+  <g font-family="system-ui, -apple-system, Helvetica, Arial, sans-serif" fill="#1c1c1c">
+    <text x="20" y="34" font-size="18" font-weight="600">Nimbus Tab DVR: how a recording moves</text>
+    <text x="20" y="56" font-size="12">One tab, one recording at a time. Every chunk is durable in the browser before it is uploaded, in order; the orange path is the chunk's.</text>
+
+    <!-- Chrome -->
+    <rect x="460" y="80" width="340" height="72" rx="6" fill="#fff3cd" stroke="#1c1c1c"/>
+    <text x="475" y="103" font-size="13" font-weight="600">Chrome: chrome.tabCapture</text>
+    <text x="475" y="121" font-size="11">issues a stream id for a tab the user has invoked once,</text>
+    <text x="475" y="137" font-size="11">or for the id given as --allowlisted-extension-id</text>
+
+    <!-- Browser tab region -->
+    <rect x="20" y="80" width="340" height="330" rx="10" fill="none" stroke="#888" stroke-dasharray="6 4"/>
+    <text x="32" y="100" font-size="12" font-style="italic" fill="#555">Browser tab, on an origin the configuration allows</text>
+    <rect x="35" y="115" width="310" height="95" rx="6" fill="#fff" stroke="#1c1c1c"/>
+    <text x="50" y="140" font-size="13" font-weight="600">Host application page</text>
+    <text x="50" y="160" font-size="11">the demo: a canvas, a YouTube embed, Done</text>
+    <text x="50" y="178" font-size="11">asks GET_RECORDING_STATUS on load, rejoins</text>
+    <rect x="35" y="290" width="310" height="95" rx="6" fill="#fff" stroke="#1c1c1c"/>
+    <text x="50" y="315" font-size="13" font-weight="600">Content script</text>
+    <text x="50" y="335" font-size="11">relays requests; posts replies and events</text>
+    <text x="50" y="353" font-size="11">a classic script with nothing to misuse</text>
+    <line x1="110" y1="210" x2="110" y2="290" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <line x1="290" y1="290" x2="290" y2="210" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <text x="200" y="236" font-size="11" text-anchor="middle">window.postMessage</text>
+    <text x="200" y="252" font-size="11" text-anchor="middle">↓ START, STOP, GET_STATUS</text>
+    <text x="200" y="268" font-size="11" text-anchor="middle">↑ replies; FINALIZED, ENDED</text>
+
+    <!-- Extension region -->
+    <rect x="420" y="180" width="440" height="520" rx="10" fill="none" stroke="#888" stroke-dasharray="6 4"/>
+    <text x="848" y="692" font-size="12" font-style="italic" fill="#555" text-anchor="end">Extension, Manifest V3</text>
+    <rect x="440" y="215" width="400" height="110" rx="6" fill="#fff" stroke="#1c1c1c"/>
+    <text x="455" y="240" font-size="13" font-weight="600">Service worker: the control plane</text>
+    <text x="455" y="260" font-size="11">validates origin and message; one recording per tab</text>
+    <text x="455" y="278" font-size="11">state in chrome.storage.session; Chrome stops it at will</text>
+    <text x="455" y="296" font-size="11">tabs.onRemoved stops a recording whose tab closed</text>
+    <line x1="520" y1="215" x2="520" y2="152" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <line x1="760" y1="152" x2="760" y2="215" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <text x="640" y="178" font-size="11" text-anchor="middle">↑ getMediaStreamId(tabId)</text>
+    <text x="640" y="196" font-size="11" text-anchor="middle">↓ stream id, or refused</text>
+
+    <line x1="345" y1="300" x2="440" y2="300" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <line x1="440" y1="320" x2="345" y2="320" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <text x="392" y="292" font-size="11" text-anchor="middle">sendMessage →</text>
+    <text x="392" y="338" font-size="11" text-anchor="middle">← events</text>
+
+    <rect x="440" y="390" width="400" height="130" rx="6" fill="#fff" stroke="#1c1c1c"/>
+    <text x="455" y="415" font-size="13" font-weight="600">Offscreen document: the data plane</text>
+    <text x="455" y="435" font-size="11">getUserMedia(stream id) → MediaRecorder, VP9 + Opus WebM</text>
+    <text x="455" y="453" font-size="11">one timeslice = one chunk; audio replayed to the speakers</text>
+    <text x="455" y="471" font-size="11">writes the chunk, then uploads it: in order, one in flight</text>
+    <text x="455" y="489" font-size="11">after the last upload, posts stop and reports finalized</text>
+    <line x1="560" y1="325" x2="560" y2="390" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <line x1="720" y1="390" x2="720" y2="325" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <text x="640" y="352" font-size="11" text-anchor="middle">↓ start(stream id), stop, status</text>
+    <text x="640" y="370" font-size="11" text-anchor="middle">↑ capture ended, finalized</text>
+
+    <rect x="440" y="595" width="260" height="75" rx="8" fill="#fff" stroke="#1c1c1c"/>
+    <text x="455" y="620" font-size="13" font-weight="600">IndexedDB spool</text>
+    <text x="455" y="640" font-size="11">every chunk, queued then uploaded</text>
+    <text x="455" y="658" font-size="11">survives a killed offscreen document</text>
+    <line x1="560" y1="520" x2="560" y2="595" stroke="#b8460e" stroke-width="1.5" marker-end="url(#arrow-chunk)"/>
+    <text x="572" y="562" font-size="11" fill="#b8460e">write the chunk first</text>
+
+    <!-- Second tab -->
+    <rect x="920" y="180" width="300" height="150" rx="10" fill="none" stroke="#888" stroke-dasharray="6 4"/>
+    <text x="932" y="200" font-size="12" font-style="italic" fill="#555">A second browser tab</text>
+    <rect x="930" y="215" width="280" height="95" rx="6" fill="#fff" stroke="#1c1c1c"/>
+    <text x="945" y="240" font-size="13" font-weight="600">Landing page</text>
+    <text x="945" y="260" font-size="11">lists the recordings and plays one</text>
+    <text x="945" y="278" font-size="11">chunks and bytes tick while one is live</text>
+    <text x="945" y="296" font-size="11">the scrubber works: the file has cues</text>
+
+    <!-- Backend region -->
+    <rect x="920" y="392" width="300" height="308" rx="10" fill="none" stroke="#888" stroke-dasharray="6 4"/>
+    <text x="932" y="412" font-size="12" font-style="italic" fill="#555">Demo backend, a stand-in for the client's</text>
+    <rect x="930" y="425" width="280" height="120" rx="6" fill="#fff" stroke="#1c1c1c"/>
+    <text x="945" y="450" font-size="13" font-weight="600">Recordings API, plain Node</text>
+    <text x="945" y="470" font-size="11">stores chunk n under recordings/id/</text>
+    <text x="945" y="488" font-size="11">stop: concatenate, then ffmpeg -c copy</text>
+    <text x="945" y="506" font-size="11">serves the list, and the file in ranges</text>
+    <text x="945" y="524" font-size="11">same origin as the demo, so no CORS</text>
+    <rect x="930" y="595" width="280" height="75" rx="8" fill="#fff" stroke="#1c1c1c"/>
+    <text x="945" y="620" font-size="13" font-weight="600">recording.webm</text>
+    <text x="945" y="640" font-size="11">duration and cues, written by ffmpeg</text>
+    <text x="945" y="658" font-size="11">seekable in a video element</text>
+    <line x1="1070" y1="545" x2="1070" y2="595" stroke="#b8460e" stroke-width="1.5" marker-end="url(#arrow-chunk)"/>
+    <text x="1082" y="575" font-size="11" fill="#b8460e">remux at stop</text>
+
+    <line x1="1010" y1="310" x2="1010" y2="425" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <line x1="1130" y1="425" x2="1130" y2="310" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <text x="1070" y="352" font-size="11" text-anchor="middle">↓ list, every second</text>
+    <text x="1070" y="370" font-size="11" text-anchor="middle">↑ file, in ranges</text>
+
+    <line x1="840" y1="440" x2="930" y2="440" stroke="#b8460e" stroke-width="1.5" marker-end="url(#arrow-chunk)"/>
+    <text x="885" y="432" font-size="11" text-anchor="middle" fill="#b8460e">POST chunk</text>
+    <line x1="840" y1="480" x2="930" y2="480" stroke="#1c1c1c" marker-end="url(#arrow)"/>
+    <text x="885" y="472" font-size="11" text-anchor="middle">POST stop</text>
+
+    <text x="20" y="728" font-size="12">The page is the trust boundary: the service worker validates the origin and the shape of every message before acting, and the page never holds a channel to the extension.</text>
+  </g>
+</svg>

@@ -26,6 +26,13 @@ See [CLAUDE.md, "Landing work"](CLAUDE.md#landing-work-branches-and-pull-request
 
 `./build.sh` with an unknown command prints its own help, which is the header of the file itself.
 
+## How it works
+
+![How a recording moves: the page asks through the content script, the service worker gets a stream id from Chrome and hands it to the offscreen document, which encodes, spools every chunk to IndexedDB and uploads it in order to the demo backend, which remuxes with ffmpeg into a file the landing page plays](docs/how-it-works.svg)
+
+The page never holds a channel to the extension: it posts a message on its own window, the content script relays it, and the service worker validates the origin and the message before anything happens.
+Capture is granted per tab, by one press of Cmd+Shift+Y or by the allowlist flag at launch; the offscreen document owns the stream, the encoder and the spool, and every chunk is durable locally before it is uploaded.
+
 ## What is here
 
 | Path | What it is |
@@ -37,7 +44,7 @@ See [CLAUDE.md, "Landing work"](CLAUDE.md#landing-work-branches-and-pull-request
 | [`scripts/demo/`](scripts/demo/) | The demo backend and the Chrome launcher |
 | [`tests/`](tests/) | The spike and the demo as Playwright tests |
 | [`scripts/`](scripts/) | The checks, the two-account GitHub wrappers, the spike's packing and policy tools, and the shared output helpers |
-| [`docs/`](docs/) | The writing style, the design questions, and the plans, reports and research |
+| [`docs/`](docs/) | The writing style, the design questions, the system diagram, and the plans, reports and research |
 | [`CLAUDE.md`](CLAUDE.md) | How to work in this repository |
 
 ## Running the demo
