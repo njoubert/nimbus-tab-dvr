@@ -1,0 +1,83 @@
+# prek hook configuration, in pre-commit's format. See https://github.com/j178/prek
+#
+# `./provision.sh` installs the hooks, so every commit is checked. CI runs the same set with
+# `./build.sh check`, which is `prek run --all-files`, so a hook skipped locally with
+# --no-verify still fails there. Never disable a hook to get past it.
+
+# The push guard needs a pre-push hook file, and `prek install` writes only the pre-commit one
+# unless the config says otherwise.
+default_install_hook_types: [pre-commit, pre-push]
+
+# A hook naming no stage runs at every stage, which would put the linters on push as well.
+# Push is meant to cost nothing, so the default is commit time and the one hook that belongs on
+# push says so itself.
+default_stages: [pre-commit]
+
+repos:
+  # ====================
+  # Protected branch
+  # ====================
+  # Work reaches main through a reviewed pull request. ALLOW_MAIN=1 is the deliberate
+  # exception, and it belongs to Niels rather than to an agent.
+  - repo: local
+    hooks:
+      - id: no-commit-to-main
+        name: No commit to main
+        entry: scripts/check-protected-branch.sh commit
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+      - id: no-push-to-main
+        name: No push to main
+        entry: scripts/check-protected-branch.sh push
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+  # ====================
+  # General
+  # ====================
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-yaml
+      - id: check-executables-have-shebangs
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        # A markdown hard break is two trailing spaces, so it is not whitespace to trim.
+        args: [--markdown-linebreak-ext=md]
+
+  # ====================
+  # Shell
+  # ====================
+  # Shellcheck at its default severity, which flags `A && B || true`; write an `if`.
+  # -x follows `source` into scripts/lib/.
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        args: ["-x"]
+
+  # ====================
+  # Local hooks
+  # ====================
+  - repo: local
+    hooks:
+      # One sentence per line in committed markdown, the rule in docs/WRITING_STYLE.md.
+      # It reports rather than rewriting; breaking the line is an edit an author reads.
+      - id: one-sentence-per-line
+        name: One sentence per line
+        entry: scripts/check-one-sentence-per-line.sh
+        language: system
+        files: '\.md$'
+        exclude: '^\.github/'
+        pass_filenames: true
