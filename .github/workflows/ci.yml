@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # The same gate as a commit: prek over every file, so a hook skipped locally with
+  # --no-verify still fails here. prek fetches the hooks it needs, shellcheck included,
+  # so this job installs nothing else.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install prek
+        run: pipx install prek
+      - name: Check
+        run: ./build.sh check
+
+  # The build runs on macOS because that is where the project is developed. It is a no-op
+  # until the language is chosen; keeping the job means the first real build has somewhere
+  # to land rather than a workflow to write.
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: ./build.sh
+      - name: Test
+        run: ./build.sh test
