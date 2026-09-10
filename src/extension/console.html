@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- Copyright (C) 2026 Niels Joubert. SPDX-License-Identifier: MIT -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nimbus Tab DVR console</title>
+    <style>
+      body { font: 14px/1.4 system-ui, sans-serif; margin: 24px; color: #222; }
+      h1 { font-size: 18px; }
+      table { border-collapse: collapse; margin: 12px 0; }
+      th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: left; font-variant-numeric: tabular-nums; }
+      pre { background: #f4f4f4; padding: 8px; overflow: auto; }
+      button { margin-right: 6px; }
+    </style>
+  </head>
+  <body>
+    <h1>Nimbus Tab DVR console</h1>
+    <p>
+      <button id="refresh">Refresh</button>
+      <button id="close-offscreen">Close the offscreen document</button>
+      <span id="note"></span>
+    </p>
+    <h2>Recordings in IndexedDB</h2>
+    <table id="recordings"><thead><tr><th>id</th><th>key</th><th>created</th><th>state</th><th>mime</th><th>chunks</th><th>bytes</th><th></th></tr></thead><tbody></tbody></table>
+    <h2>Service worker status</h2>
+    <pre id="status"></pre>
+    <script type="module" src="./console.ts"></script>
+  </body>
+</html>

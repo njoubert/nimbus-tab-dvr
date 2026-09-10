@@ -19,3 +19,14 @@ build/
 
 # Agent state and the worktrees other sessions create here.
 .claude/
+
+# Node
+node_modules/
+
+# Playwright
+test-results/
+playwright-report/
+
+# Signing keys never enter the repository; the public half is in the manifest.
+*.pem
+.build-chrome/

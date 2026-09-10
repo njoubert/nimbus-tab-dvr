@@ -72,4 +72,4 @@ An artifact is private by default, carries one stable URL per report that surviv
 
 | Report | Date | Page |
 | ------ | ---- | ---- |
-|        |      |      |
+| [Capture feasibility spike](2026-09-09-2343-capture-feasibility-spike.md) | 2026-09-09 23:43 | https://claude.ai/code/artifact/c9d29648-ee7e-4662-abe3-80c48762b6c3 |

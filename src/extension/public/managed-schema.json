@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "allowedOrigins": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "capture": {
+      "type": "object",
+      "properties": {
+        "audio": { "type": "boolean" },
+        "targetFps": { "type": "integer" },
+        "maxWidth": { "type": "integer" },
+        "maxHeight": { "type": "integer" },
+        "videoBitsPerSecond": { "type": "integer" },
+        "timesliceMs": { "type": "integer" },
+        "mimeType": { "type": "string" }
+      }
+    }
+  }
+}

@@ -5,14 +5,15 @@
 </p>
 
 <p align="center">
-  <em>Skeleton.</em> The repository holds its scripts, its checks and its conventions; the language, the capture interface and the distribution channel are not chosen yet.
+  A Manifest V3 Chrome extension that records the tab a host web application asks it to, with a demo application standing in for the host.
+  The capture feasibility spike is done and <a href="docs/reports/2026-09-09-2343-capture-feasibility-spike.md">reported</a>; the application contract, the upload path and the distribution channel come next.
 </p>
 
 ```
-./provision.sh            # a development Mac: the toolchain, the git hooks, both GitHub logins
-./build.sh                # build
-./build.sh test           # run the test suite
-./build.sh check          # the gate CI runs: prek over every file
+./provision.sh            # a development Mac: the toolchain, npm, the git hooks, both GitHub logins
+./build.sh                # Vite builds the extension and the demo into dist/
+./build.sh test           # Playwright drives the extension in a real Chromium and prints its findings
+./build.sh check          # the gate CI runs: prek over every file, then tsc
 ./build.sh clean          # remove build products
 ```
 
@@ -28,15 +29,18 @@ See [CLAUDE.md, "Landing work"](CLAUDE.md#landing-work-branches-and-pull-request
 | ---- | ---------- |
 | [`build.sh`](build.sh) | Build, test, format, check, clean |
 | [`provision.sh`](provision.sh) | Everything a fresh machine needs, re-runnable |
-| [`scripts/`](scripts/) | The checks, the two-account GitHub wrappers, and the shared output helpers |
+| [`src/extension/`](src/extension/) | The extension: service worker, content script, offscreen recorder, IndexedDB spool, console page |
+| [`src/demo/`](src/demo/) | The demo host: a landing page, then a page with a canvas, a YouTube embed and a Done button |
+| [`tests/`](tests/) | The spike as a Playwright test |
+| [`scripts/`](scripts/) | The checks, the two-account GitHub wrappers, the spike's packing and policy tools, and the shared output helpers |
 | [`docs/`](docs/) | The writing style, the design questions, and the plans, reports and research |
 | [`CLAUDE.md`](CLAUDE.md) | How to work in this repository |
 
 ## What is not here yet
 
-**No language, no build, no tests.**
-`./build.sh build`, `test` and `fmt` are declared and print that they are not implemented, so a fresh checkout and CI both pass from the first commit.
-[docs/GRILLING.md](docs/GRILLING.md) holds the open questions in the order their answers matter, and answering one is what turns a stub into a build.
+**No upload, no application contract beyond start and stop, no formatter.**
+The extension records into IndexedDB and stops there; the console page assembles a file by hand.
+[docs/GRILLING.md](docs/GRILLING.md) holds the questions with their answers so far, and [docs/plans/](docs/plans/) holds what is built next.
 
 ## Licence
 

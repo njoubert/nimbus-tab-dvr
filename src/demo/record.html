@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- Copyright (C) 2026 Niels Joubert. SPDX-License-Identifier: MIT -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tab DVR demo: recording</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Tab DVR demo: this page is being recorded</h1>
+      <p id="extension" data-state="looking">looking for the extension</p>
+      <p>Recording: <code id="status" data-type="">waiting</code></p>
+      <p>
+        <button id="done">Done</button>
+        <button id="retry">Start again</button>
+        <button id="probe">Probe capture grant</button>
+        <span id="probe-result"></span>
+      </p>
+      <div class="stage">
+        <canvas id="canvas" width="640" height="360"></canvas>
+        <iframe
+          id="youtube"
+          width="640"
+          height="360"
+          src="https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&start=30"
+          title="Big Buck Bunny"
+          allow="autoplay; encrypted-media"
+        ></iframe>
+      </div>
+      <p>Draw on the canvas with the mouse. The ball moves on its own so there is always motion to encode.</p>
+      <pre id="log"></pre>
+    </main>
+    <script type="module" src="./record.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- Copyright (C) 2026 Niels Joubert. SPDX-License-Identifier: MIT -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tab DVR demo</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Tab DVR demo: landing page</h1>
+      <p>This page is not recording. The next page records itself through the extension until you press Done.</p>
+      <p id="extension" data-state="looking">looking for the extension</p>
+      <p id="last"></p>
+      <fieldset>
+        <legend>Capture</legend>
+        <label><input type="checkbox" id="audio" /> capture the tab's audio</label>
+        <label>timeslice <input type="number" id="timeslice" value="5000" min="250" step="250" /> ms</label>
+      </fieldset>
+      <p>
+        <button id="start">Start</button>
+        <button id="probe">Probe capture grant</button>
+        <span id="probe-result"></span>
+      </p>
+      <pre id="log"></pre>
+    </main>
+    <script type="module" src="./landing.ts"></script>
+  </body>
+</html>

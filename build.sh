@@ -4,13 +4,12 @@
 #
 #   ./build.sh              build (the default)
 #   ./build.sh test         run the test suite
-#   ./build.sh check        the gate CI runs: prek over every file
+#   ./build.sh check        the gate CI runs: prek over every file, then tsc
 #   ./build.sh fmt          format every file the formatters own
 #   ./build.sh clean        remove build products
 #
-# The project has no language yet, so build, test and fmt are declared here and do nothing.
-# Each one is a single function below with a TODO naming what it will run; filling one in is
-# the whole change, and `check` already enforces the repository's own rules.
+# The language is TypeScript: Vite builds the extension and the demo, Playwright runs the
+# tests, and `check` adds tsc to the prek hooks. `fmt` is still declared and does nothing.
 #
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
@@ -28,27 +27,53 @@ declared_only() {
     print_info "declare it in build.sh, in the function above this message"
 }
 
+require_node_modules() {
+    if [ ! -d node_modules ]; then
+        print_error "node_modules is missing"
+        print_info "run ./provision.sh, or: npm ci"
+        exit 1
+    fi
+}
+
 do_build() {
     print_header "Building $NAME"
-    stage "building"
-    # TODO: the compiler or bundler goes here, writing into $BUILD_DIR.
-    declared_only "build"
-    result "nothing to build yet"
+    require_node_modules
+
+    stage "bundling the extension"
+    npx vite build --config vite.extension.config.ts --logLevel warn
+    # A content script is a classic script. Vite emits it as a module chunk, which is fine
+    # exactly as long as it shares no code with the other entries; an import here means it
+    # did, and Chrome would fail to load it with no message worth reading.
+    if grep -qE '^(import|export) ' "$BUILD_DIR/extension/content-script.js"; then
+        print_error "content-script.js contains an import; it must stay dependency free"
+        exit 1
+    fi
+    print_success "extension: $BUILD_DIR/extension ($(find "$BUILD_DIR/extension" -name '*.js' | wc -l | tr -d ' ') scripts)"
+
+    stage "bundling the demo application"
+    npx vite build --config vite.demo.config.ts --logLevel warn
+    print_success "demo: $BUILD_DIR/demo"
+    result "built into $BUILD_DIR"
 }
 
 do_test() {
     print_header "Testing $NAME"
-    stage "running the tests"
-    # TODO: the test runner goes here.
-    declared_only "test"
-    result "no tests yet"
+    require_node_modules
+    if [ ! -f "$BUILD_DIR/extension/manifest.json" ]; then
+        print_error "$BUILD_DIR/extension is missing; run ./build.sh first"
+        exit 1
+    fi
+    stage "running Playwright"
+    npx playwright test "$@"
+    print_success "tests passed"
+    result "tests passed"
 }
 
 do_fmt() {
     print_header "Formatting"
     stage "formatting"
-    # TODO: the language formatter goes here. Markdown reflow belongs here too, once
-    # scripts/check-one-sentence-per-line.sh grows a --fix.
+    # TODO: no formatter is in the dependency budget yet. Markdown reflow belongs here too,
+    # once scripts/check-one-sentence-per-line.sh grows a --fix.
     declared_only "fmt"
     result "nothing to format yet"
 }
@@ -68,6 +93,11 @@ do_check() {
     # is checked out, which is a lint run rather than an attempt to write to main.
     SKIP=no-commit-to-main prek run --all-files
     print_success "prek passed"
+
+    stage "type checking"
+    require_node_modules
+    npx tsc --noEmit
+    print_success "tsc passed"
     result "checks passed"
 }
 
@@ -75,12 +105,15 @@ do_clean() {
     print_header "Cleaning build products"
     stage "removing $BUILD_DIR"
 
-    if [ -d "$BUILD_DIR" ]; then
-        rm -rf "${BUILD_DIR:?}"
-        print_success "removed $BUILD_DIR"
-    else
-        print_info "$BUILD_DIR does not exist"
-    fi
+    local dir
+    for dir in "$BUILD_DIR" test-results playwright-report; do
+        if [ -d "$dir" ]; then
+            rm -rf "${dir:?}"
+            print_success "removed $dir"
+        else
+            print_info "$dir does not exist"
+        fi
+    done
     result "clean"
 }
 

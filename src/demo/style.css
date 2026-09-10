@@ -1,0 +1,61 @@
+/* Copyright (C) 2026 Niels Joubert. SPDX-License-Identifier: MIT */
+
+body {
+  font: 15px/1.5 system-ui, sans-serif;
+  margin: 0;
+  color: #1c1c1c;
+  background: #fafafa;
+}
+
+main {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+h1 {
+  font-size: 22px;
+}
+
+fieldset {
+  display: inline-block;
+  margin: 8px 0;
+}
+
+label {
+  margin-right: 16px;
+}
+
+button {
+  font: inherit;
+  padding: 6px 14px;
+  margin-right: 8px;
+}
+
+code#status {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  background: #eef;
+  padding: 2px 6px;
+}
+
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+canvas,
+iframe {
+  max-width: 100%;
+  border: 1px solid #ccc;
+}
+
+pre#log {
+  background: #f0f0f0;
+  padding: 8px;
+  max-height: 240px;
+  overflow: auto;
+  font-size: 12px;
+}
