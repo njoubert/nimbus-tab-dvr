@@ -33,4 +33,5 @@ The reason it was abandoned goes in [docs/GRILLING.md](../GRILLING.md) or in the
 
 | Plan | Date | Report |
 | ---- | ---- | ------ |
-|      |      |        |
+| [Capture feasibility spike](2026-09-09-capture-feasibility-spike.md) | 2026-09-09 | pending |
+| [Tab recording sidecar sketch](2026-09-09-tab-recording-sidecar-sketch.md) | 2026-09-09 | the sketch the spike came from; not executed as written |
