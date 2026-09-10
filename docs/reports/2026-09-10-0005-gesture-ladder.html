@@ -1,0 +1,70 @@
+<title>Gesture Ladder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:wght@600&display=swap">
+<style>
+  :root { --ground: #f6f5f1; --paper: #fdfcf9; --ink: #1f2124; --ink-2: #5a5e66; --rule: #d9d6cf; --record: #c8322b; --granted: #2b7a4b; --refused: #a04a1c; --tint: #ece9e1; --code: #efece5; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ground: #17181b; --paper: #1e2024; --ink: #e8e6e0; --ink-2: #a3a39c; --rule: #34373d; --record: #ef5a4f; --granted: #5fc68a; --refused: #e8935a; --tint: #26292e; --code: #24272c; } }
+  :root[data-theme="dark"] { --ground: #17181b; --paper: #1e2024; --ink: #e8e6e0; --ink-2: #a3a39c; --rule: #34373d; --record: #ef5a4f; --granted: #5fc68a; --refused: #e8935a; --tint: #26292e; --code: #24272c; }
+  body { background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-size: 16px; line-height: 1.55; padding-inline: 20px; padding-block: 40px 64px; }
+  main { max-width: 860px; margin: 0 auto; }
+  h1, h2 { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600; text-wrap: balance; line-height: 1.2; }
+  h1 { font-size: 1.9rem; margin: 0 0 8px; }
+  h2 { font-size: 1.3rem; margin: 44px 0 12px; }
+  p, li { max-width: 68ch; }
+  .eyebrow { font-family: "IBM Plex Mono", Menlo, monospace; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .eyebrow .rec::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--record); margin-right: 6px; vertical-align: 1px; }
+  .ladder { list-style: none; padding: 0; margin: 20px 0; border: 1px solid var(--rule); background: var(--paper); }
+  .ladder li { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .ladder li:last-child { border-bottom: 0; }
+  .ladder .how { font-size: 0.9rem; color: var(--ink-2); }
+  .ok { color: var(--granted); font-weight: 600; } .no { color: var(--refused); font-weight: 600; } .na { color: var(--ink-2); }
+  code, pre { font-family: "IBM Plex Mono", Menlo, monospace; font-size: 0.86em; }
+  code { background: var(--code); padding: 1px 5px; border-radius: 3px; }
+  pre { background: var(--code); padding: 14px 16px; overflow-x: auto; margin: 12px 0 20px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.93rem; font-variant-numeric: tabular-nums; background: var(--paper); }
+  .scroll { overflow-x: auto; margin: 12px 0 20px; border: 1px solid var(--rule); }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
+  th { font-weight: 500; color: var(--ink-2); font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; background: var(--tint); }
+  tr:last-child td { border-bottom: 0; } td.num { text-align: right; }
+  a { color: inherit; text-decoration-color: var(--record); text-underline-offset: 3px; }
+  .colophon { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--ink-2); font-family: "IBM Plex Mono", Menlo, monospace; }
+</style>
+<main>
+  <div class="eyebrow"><span class="rec">Report</span><span>2026-09-10 00:05</span><span>nimbus-tab-dvr</span><span>follows the capture spike</span></div>
+  <h1>Gesture ladder: a real keystroke is the invocation, and the grant survives a reload</h1>
+  <p>With Accessibility granted to iTerm2, the spike test's gesture ladder ran with the allowlist flag off, and the second rung worked. One Cmd+Shift+Y sent as a real macOS keystroke through System Events invoked the extension on the tab, and after it three start and stop cycles, a page reload, a killed offscreen document and an audio capture all ran with no further gesture. The probe after the reloaded page stopped its recording was granted without another keystroke, so a grant earned by invocation survives a same-origin reload.</p>
+  <p>This is the deployment path: the fleet's Chrome is not launched with the flag, so a recording needs one invocation per tab, and that invocation is now shown to be one keystroke or click that the rest of the tab's life inherits.</p>
+
+  <h2>The ladder</h2>
+  <ul class="ladder">
+    <li><div>Playwright keyboard, <code>Meta+Shift+KeyY</code><div class="how">Reaches the renderer, not the browser's accelerator table</div></div><span class="no">refused</span></li>
+    <li><div>System Events keystroke, Cmd+Shift+Y through <code>osascript</code><div class="how">The <code>commands</code> shortcut in the manifest; needs Accessibility for the terminal</div></div><span class="ok">granted</span></li>
+    <li><div>System Events click on the toolbar button<div class="how">Never reached; the ladder stops at the first rung Chrome accepts</div></div><span class="na">not run</span></li>
+  </ul>
+
+  <h2>What followed the one keystroke</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Step</th><th>Result</th><th>Chunks</th><th>Bytes</th></tr></thead>
+    <tbody>
+      <tr><td>Cycle 1</td><td><code>RECORDING_STARTED</code> 1920 by 1080 at 15 fps, then <code>RECORDING_STOPPED</code>; 94 packets to 6.25 s</td><td class="num">4</td><td class="num">1,294,953</td></tr>
+      <tr><td>Cycle 2</td><td>same</td><td class="num">2</td><td class="num">1,499,575</td></tr>
+      <tr><td>Cycle 3</td><td>same</td><td class="num">2</td><td class="num">1,468,646</td></tr>
+      <tr><td>Reload while live</td><td><code>ALREADY_RECORDING</code> naming the live recording; Done stopped it</td><td class="num">1</td><td class="num">941,703</td></tr>
+      <tr><td>Probe after the stop</td><td class="ok">granted, with no second keystroke</td><td></td><td></td></tr>
+      <tr><td>Killed offscreen document</td><td><code>OFFSCREEN_GONE</code>; 78 packets to 4.95 s kept</td><td></td><td></td></tr>
+      <tr><td>Audio</td><td><code>audio: true</code>; vp9 and opus, 201 packets to 6.13 s</td><td></td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>What it decides</h2>
+  <ul>
+    <li>One invocation per tab is a keystroke or a click, once. The application can tell the user exactly that on its landing page.</li>
+    <li>The grant outlives a reload. The documentation says a same-origin navigation keeps it and is silent on reload; this run says reload keeps it too.</li>
+    <li>The test covers both paths: <code>./build.sh test</code> with the flag, which CI runs headless, and <code>NIMBUS_ALLOWLIST=0 ./build.sh test</code> for the keystroke on a Mac whose terminal has Accessibility.</li>
+  </ul>
+
+  <h2>Verified and unverified</h2>
+  <p><strong>Verified by running:</strong> everything above, on Playwright's Chromium 153.0.8010.12, headed, by Niels in iTerm2 on 2026-09-10.</p>
+  <p><strong>Not measured:</strong> the toolbar click; the same on Google Chrome 150, which cannot load the extension unpacked; whether a grant survives a cross-origin navigation, which the documentation says it does not.</p>
+
+  <div class="colophon">docs/reports/2026-09-10-0005-gesture-ladder.md · written on main at ea6cd35 · <a href="https://github.com/njoubert/nimbus-tab-dvr">njoubert/nimbus-tab-dvr</a></div>
+</main>

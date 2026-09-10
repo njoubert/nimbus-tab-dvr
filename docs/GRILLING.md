@@ -39,6 +39,7 @@ The extension never has to produce a seekable file itself.
 Proven by [the spike report](reports/2026-09-09-2343-capture-feasibility-spike.md): Chrome grants capture to a tab the user has invoked the extension on, or to an extension whose id Chrome was launched with as `--allowlisted-extension-id`, and nothing else lifts that.
 One click per tab was accepted on 2026-09-09; the flag is the zero-click path where a launcher starts Chrome.
 Decided 2026-09-10: for demo and development, Chrome is launched with the flag, which is what the test does; in deployment the fleet's Chrome is not launched with a flag, so a recording needs one invocation per tab.
+Measured 2026-09-10 in [the gesture ladder report](reports/2026-09-10-0005-gesture-ladder.md): the invocation is one press of the manifest's `commands` shortcut, Cmd+Shift+Y, and the grant it earns survives a reload of the page.
 
 **2b.** What happens when that interface is unavailable, denied by the user, or changed by a browser update?
 
