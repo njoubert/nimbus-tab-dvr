@@ -5,24 +5,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tab DVR demo</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <main>
       <h1>Tab DVR demo: landing page</h1>
-      <p>This page is not recording. The next page records itself through the extension until you press Done.</p>
+      <p>This page is not recording. The next page records itself through the extension until you press Done, and every chunk lands on the backend as it is encoded.</p>
       <p id="extension" data-state="looking">looking for the extension</p>
+      <p id="backend" data-state="looking">looking for the backend</p>
       <p id="last"></p>
       <fieldset>
         <legend>Capture</legend>
-        <label><input type="checkbox" id="audio" /> capture the tab's audio</label>
-        <label>timeslice <input type="number" id="timeslice" value="5000" min="250" step="250" /> ms</label>
+        <label><input type="checkbox" id="audio" checked /> capture the tab's audio</label>
+        <label>timeslice <input type="number" id="timeslice" value="2000" min="250" step="250" /> ms</label>
       </fieldset>
       <p>
         <button id="start">Start</button>
         <button id="probe">Probe capture grant</button>
         <span id="probe-result"></span>
       </p>
+      <h2>Recordings on the backend</h2>
+      <table id="recordings">
+        <thead><tr><th>key</th><th>started</th><th>state</th><th>chunks</th><th>bytes</th><th>duration</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p id="playing"></p>
+      <video id="player" controls width="960" height="540"></video>
       <pre id="log"></pre>
     </main>
     <script type="module" src="./landing.ts"></script>

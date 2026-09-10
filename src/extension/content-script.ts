@@ -2,17 +2,18 @@
 // SPDX-License-Identifier: MIT
 
 // The bridge between the page and the service worker. It relays a request from the page's
-// window to the service worker and posts the reply back where it came from, and does nothing
-// else, so the page never holds a channel to the extension it could misuse.
+// window to the service worker and posts the reply back where it came from, and posts the
+// events the service worker sends this tab unasked; nothing else, so the page never holds a
+// channel to the extension it could misuse.
 //
 // This file is a classic script, not a module: it may import types and nothing else.
 
-import type { AppMessage, ExtensionMessage, ExtensionReply, ToServiceWorker } from '../shared/protocol';
+import type { AppMessage, ExtensionEvent, ExtensionMessage, ExtensionReply, ToContentScript, ToServiceWorker } from '../shared/protocol';
 
 const APP_SOURCE = 'nimbus-tab-dvr/app';
 const EXTENSION_SOURCE = 'nimbus-tab-dvr/extension';
 
-function post(reply: ExtensionReply): void {
+function post(reply: ExtensionReply | ExtensionEvent): void {
   const message: ExtensionMessage = { source: EXTENSION_SOURCE, ...reply };
   window.postMessage(message, window.location.origin);
 }
@@ -37,4 +38,11 @@ window.addEventListener('message', (event: MessageEvent) => {
         recoverable: true,
       });
     });
+});
+
+chrome.runtime.onMessage.addListener((envelope: unknown) => {
+  const typed = envelope as Partial<ToContentScript> | null;
+  if (!typed || typed.target !== 'content-script' || !typed.message) return false;
+  post(typed.message);
+  return false;
 });

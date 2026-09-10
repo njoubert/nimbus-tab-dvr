@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: [['list']],
   outputDir: 'test-results',
   webServer: {
-    command: 'node scripts/spike/serve.mjs',
+    command: 'node scripts/demo/serve.mjs',
     url: 'http://localhost:5173/',
     reuseExistingServer: true,
     timeout: 30_000,

@@ -15,9 +15,10 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 # shellcheck source=scripts/lib/output.sh
 source scripts/lib/output.sh
 
-# The tools every checkout needs. Node carries the TypeScript toolchain through npm; the rest
-# is the repository's own checks and the GitHub flow.
-BREW_PACKAGES=(prek shellcheck gh jq node)
+# The tools every checkout needs. Node carries the TypeScript toolchain through npm; ffmpeg is
+# what the demo backend remuxes with and the test measures with; the rest is the repository's
+# own checks and the GitHub flow.
+BREW_PACKAGES=(prek shellcheck gh jq node ffmpeg)
 
 # The two GitHub accounts a dev machine needs. Niels reviews as himself; agents post as the
 # second account, so a pull request does not read as one person talking to themselves, and so
@@ -55,7 +56,7 @@ install_toolchain() {
         brew install "${missing[@]}"
     fi
 
-    print_success "prek $(prek --version | awk '{print $2}'), shellcheck $(shellcheck --version | awk '/^version:/{print $2}'), gh $(gh --version | awk 'NR==1{print $3}'), jq $(jq --version), node $(node --version)"
+    print_success "prek $(prek --version | awk '{print $2}'), shellcheck $(shellcheck --version | awk '/^version:/{print $2}'), gh $(gh --version | awk 'NR==1{print $3}'), jq $(jq --version), node $(node --version), ffmpeg $(ffmpeg -version | awk 'NR==1{print $3}')"
 }
 
 install_node_modules() {

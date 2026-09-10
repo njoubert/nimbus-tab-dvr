@@ -99,11 +99,14 @@ async function startFromLanding(page: Page): Promise<Record<string, unknown>> {
   return statusReply(page);
 }
 
+// The recording page leaves for the landing page once the backend finalizes, or after ten
+// seconds if it never does, so the wait here outlasts that fallback.
 async function done(page: Page): Promise<Record<string, unknown>> {
   await page.locator('#done').click();
-  await expect(page.locator('#status')).toHaveAttribute('data-type', /RECORDING_(STOPPED|ERROR)/, { timeout: 20_000 });
+  await expect(page.locator('#status')).toHaveAttribute('data-type', /RECORDING_(STOPPED|FINALIZED|ERROR)/, { timeout: 20_000 });
   const reply = JSON.parse((await page.locator('#status').textContent()) ?? '{}') as Record<string, unknown>;
-  await page.waitForURL(/index\.html|\/$/, { timeout: 10_000 });
+  if (reply.type === 'RECORDING_FINALIZED') reply.type = 'RECORDING_STOPPED';
+  await page.waitForURL(/index\.html|\/$/, { timeout: 15_000 });
   return reply;
 }
 
@@ -293,8 +296,10 @@ test('Q1b to Q3: one invocation, then unattended cycles, reload, kill, and audio
     await page.waitForTimeout(2000);
     await page.reload();
     const afterReload = await statusReply(page);
-    finding(`START_RECORDING sent again by the reloaded page: ${JSON.stringify(afterReload)}`);
-    expect(afterReload.code).toBe('ALREADY_RECORDING');
+    finding(`the reloaded page asked for status and got: ${JSON.stringify(afterReload)}`);
+    expect(afterReload.type).toBe('RECORDING_STATUS');
+    expect(afterReload.state).toBe('RECORDING');
+    expect(afterReload.recordingId).toBe(started.recordingId);
     const during = await probe(page);
     finding(`probe while the reloaded page's recording is live: ${during.ok ? 'GRANTED' : 'refused'} (${during.detail})`);
     await page.waitForTimeout(2000);

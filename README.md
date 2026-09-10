@@ -6,7 +6,8 @@
 
 <p align="center">
   A Manifest V3 Chrome extension that records the tab a host web application asks it to, with a demo application standing in for the host.
-  The capture feasibility spike is done and <a href="docs/reports/2026-09-09-2343-capture-feasibility-spike.md">reported</a>; the application contract and the upload path come next, and the client deploys through Jamf to managed Chrome.
+  The capture feasibility spike is done and <a href="docs/reports/2026-09-09-2343-capture-feasibility-spike.md">reported</a>, and the demo is built: every chunk lands on a demo backend as it is encoded, the backend remuxes the recording with ffmpeg, and the demo application plays it back seekable.
+  The application contract waits behind the demo, and the client deploys through Jamf to managed Chrome.
 </p>
 
 ```
@@ -15,6 +16,8 @@
 ./build.sh test           # Playwright drives the extension in a real Chromium and prints its findings
 ./build.sh check          # the gate CI runs: prek over every file, then tsc
 ./build.sh clean          # remove build products
+node scripts/demo/serve.mjs   # the demo backend: the demo on 5173 with the recordings API, the packed extension on 8765
+scripts/demo/chrome.sh        # a real Chrome on a throwaway profile, with the extension's id allowlisted for capture
 ```
 
 Work reaches `main` through a pull request, which prek enforces at commit and push time.
@@ -30,16 +33,28 @@ See [CLAUDE.md, "Landing work"](CLAUDE.md#landing-work-branches-and-pull-request
 | [`build.sh`](build.sh) | Build, test, format, check, clean |
 | [`provision.sh`](provision.sh) | Everything a fresh machine needs, re-runnable |
 | [`src/extension/`](src/extension/) | The extension: service worker, content script, offscreen recorder, IndexedDB spool, console page |
-| [`src/demo/`](src/demo/) | The demo host: a landing page, then a page with a canvas, a YouTube embed and a Done button |
-| [`tests/`](tests/) | The spike as a Playwright test |
+| [`src/demo/`](src/demo/) | The demo host: a landing page that lists and plays the backend's recordings, then a page with a canvas, a YouTube embed and a Done button |
+| [`scripts/demo/`](scripts/demo/) | The demo backend and the Chrome launcher |
+| [`tests/`](tests/) | The spike and the demo as Playwright tests |
 | [`scripts/`](scripts/) | The checks, the two-account GitHub wrappers, the spike's packing and policy tools, and the shared output helpers |
 | [`docs/`](docs/) | The writing style, the design questions, and the plans, reports and research |
 | [`CLAUDE.md`](CLAUDE.md) | How to work in this repository |
 
+## Running the demo
+
+1. `./build.sh`, then `node scripts/demo/serve.mjs` in a terminal that stays open.
+2. `scripts/demo/chrome.sh` launches Google Chrome on a throwaway profile with the extension's id allowlisted for tab capture.
+   The branded Chrome ignores `--load-extension`, so on the first launch it opens `chrome://extensions`: turn on Developer mode, press Load unpacked and pick `dist/extension`, once; the profile remembers it.
+3. On the landing page press Start.
+   The recording page records itself; a second tab on the landing page shows the chunks landing; a reload of the recording page rejoins its recording; closing the tab still lands it; Done finalizes it, and Play scrubs it.
+
+The demo backend keeps its recordings in `.build-demo/recordings/` and needs `ffmpeg` on the path, which `./provision.sh` installs.
+A fleet's Chrome is not launched with the flag; there, one press of Cmd+Shift+Y on the tab is what allows capture, and the recording page says so when it is needed.
+
 ## What is not here yet
 
-**No upload, no application contract beyond start and stop, no formatter.**
-The extension records into IndexedDB and stops there; the console page assembles a file by hand.
+**No retries, no authorization, no application contract beyond what the demo speaks, no formatter.**
+The backend in this repository stands in for the client's; a backend that is down leaves the recording in IndexedDB, where the console page can still assemble it.
 [docs/GRILLING.md](docs/GRILLING.md) holds the questions with their answers so far, and [docs/plans/](docs/plans/) holds what is built next.
 
 ## Licence

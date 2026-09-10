@@ -8,7 +8,7 @@
 #   scripts/spike/policy.sh remove     delete both again
 #
 # Chrome reads these at launch, so quit and relaunch it after install or remove, and check
-# chrome://policy for what it accepted. scripts/spike/chrome.sh launches a Chrome that uses
+# chrome://policy for what it accepted. scripts/demo/chrome.sh launches a Chrome that uses
 # a separate profile but the same policies.
 #
 set -Eeuo pipefail

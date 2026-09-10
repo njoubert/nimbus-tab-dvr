@@ -20,8 +20,13 @@
       <button id="close-offscreen">Close the offscreen document</button>
       <span id="note"></span>
     </p>
+    <p>
+      <label>backend <input id="api-base-url" size="40" placeholder="http://localhost:5173" /></label>
+      <button id="save-api-base-url">Save</button>
+      <span id="api-note"></span>
+    </p>
     <h2>Recordings in IndexedDB</h2>
-    <table id="recordings"><thead><tr><th>id</th><th>key</th><th>created</th><th>state</th><th>mime</th><th>chunks</th><th>bytes</th><th></th></tr></thead><tbody></tbody></table>
+    <table id="recordings"><thead><tr><th>id</th><th>key</th><th>created</th><th>state</th><th>mime</th><th>chunks</th><th>bytes</th><th>uploaded</th><th></th></tr></thead><tbody></tbody></table>
     <h2>Service worker status</h2>
     <pre id="status"></pre>
     <script type="module" src="./console.ts"></script>
