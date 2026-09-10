@@ -15,9 +15,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 # shellcheck source=scripts/lib/output.sh
 source scripts/lib/output.sh
 
-# The tools every checkout needs, whatever the project is written in. A language toolchain is
-# added here when the language is chosen, beside the line that reports its version.
-BREW_PACKAGES=(prek shellcheck gh jq)
+# The tools every checkout needs. Node carries the TypeScript toolchain through npm; the rest
+# is the repository's own checks and the GitHub flow.
+BREW_PACKAGES=(prek shellcheck gh jq node)
 
 # The two GitHub accounts a dev machine needs. Niels reviews as himself; agents post as the
 # second account, so a pull request does not read as one person talking to themselves, and so
@@ -55,7 +55,19 @@ install_toolchain() {
         brew install "${missing[@]}"
     fi
 
-    print_success "prek $(prek --version | awk '{print $2}'), shellcheck $(shellcheck --version | awk '/^version:/{print $2}'), gh $(gh --version | awk 'NR==1{print $3}'), jq $(jq --version)"
+    print_success "prek $(prek --version | awk '{print $2}'), shellcheck $(shellcheck --version | awk '/^version:/{print $2}'), gh $(gh --version | awk 'NR==1{print $3}'), jq $(jq --version), node $(node --version)"
+}
+
+install_node_modules() {
+    print_header "Node modules (npm)"
+    stage "installing the npm packages"
+
+    npm ci --no-audit --no-fund
+    print_success "node_modules from package-lock.json"
+
+    stage "installing Playwright's Chromium"
+    npx playwright install chromium
+    print_success "Playwright chromium $(npx playwright --version | awk '{print $2}')"
 }
 
 install_hooks() {
@@ -123,6 +135,13 @@ report() {
         fi
     done
 
+    if [ -d node_modules ] && [ -x node_modules/.bin/vite ]; then
+        print_success "node_modules is installed"
+    else
+        print_warning "node_modules is missing; run ./provision.sh"
+        gaps=1
+    fi
+
     local hook
     for hook in pre-commit pre-push; do
         if [ -f ".git/hooks/$hook" ] && grep -q prek ".git/hooks/$hook" 2>/dev/null; then
@@ -158,6 +177,7 @@ case "$cmd" in
     dev)
         require_macos
         install_toolchain
+        install_node_modules
         install_hooks
         install_gh_accounts
         # A skipped login is a choice, so the run stays green and the ⚠ lines say what is left.

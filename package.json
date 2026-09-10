@@ -1,0 +1,31 @@
+{
+  "name": "nimbus-tab-dvr",
+  "version": "0.0.1",
+  "description": "A digital video recorder for a browser tab",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "./build.sh",
+    "test": "./build.sh test",
+    "check": "./build.sh check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njoubert/nimbus-tab-dvr.git"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/njoubert/nimbus-tab-dvr/issues"
+  },
+  "homepage": "https://github.com/njoubert/nimbus-tab-dvr#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/chrome": "^0.2.9",
+    "@types/node": "^22.20.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  },
+  "private": true
+}

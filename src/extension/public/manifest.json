@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Nimbus Tab DVR",
+  "version": "0.0.1",
+  "description": "Records the tab a host application asks it to, with chrome.tabCapture and MediaRecorder.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzsx7fEyrJhOJlPufLXlKrTSoc46RlsBuVNlpdepnDmXWaMNqpklkqTrrjcK7fg8CdwAXzwIrMHIYSMY0wyd2RW7Fwsq5KOF5qpVHkuXTM8mF9Bw/ECSwaTaJ7or4zvTCxkw3yd6H/luTB/A6Goa/1Pbz8k7ezAb7Lo7l3OKsV+BBzGOZeiG5KAmeps+FigIAcTKQrCDH6kuqjLViuQt97cCw/jWPqJ+tJ0MMj1thgx9pdz9gXkMrbb6FuSGMYFkoScPRV6/n9VSz7Sn8ukWRNGCq0h5IDeTDHzpc8pOwAWVZsoJgtpEhXwoxIbUisLdEEEvwLLeV6GFDI4ffM7I1kQIDAQAB",
+  "permissions": [
+    "tabCapture",
+    "offscreen",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "content-script.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_title": "Nimbus Tab DVR: click once to allow capture of this tab"
+  },
+  "commands": {
+    "invoke": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Allow capture of the current tab"
+    }
+  },
+  "storage": {
+    "managed_schema": "managed-schema.json"
+  }
+}

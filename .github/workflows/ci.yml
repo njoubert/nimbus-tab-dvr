@@ -8,25 +8,45 @@ on:
 
 jobs:
   # The same gate as a commit: prek over every file, so a hook skipped locally with
-  # --no-verify still fails here. prek fetches the hooks it needs, shellcheck included,
-  # so this job installs nothing else.
+  # --no-verify still fails here, then tsc. prek fetches the hooks it needs, shellcheck
+  # included; tsc needs node_modules.
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
       - name: Install prek
         run: pipx install prek
+      - name: Install node modules
+        run: npm ci --no-audit --no-fund
       - name: Check
         run: ./build.sh check
 
-  # The build runs on macOS because that is where the project is developed. It is a no-op
-  # until the language is chosen; keeping the job means the first real build has somewhere
-  # to land rather than a workflow to write.
+  # The build and the test run on macOS because that is where the project is developed and
+  # where the spike's gesture automation lives. Headless in CI, so the gesture test skips
+  # itself and only the paths downstream of the grant run.
   build:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install node modules
+        run: npm ci --no-audit --no-fund
+      - name: Install Playwright's Chromium
+        run: npx playwright install chromium
       - name: Build
         run: ./build.sh
       - name: Test
         run: ./build.sh test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spike-results
+          path: test-results/
+          if-no-files-found: ignore
