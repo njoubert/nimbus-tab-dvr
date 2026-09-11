@@ -1,7 +1,7 @@
 # Nimbus Tab DVR: notes for agents
 
 A digital video recorder for a browser tab: a Manifest V3 Chrome extension in TypeScript that records the tab a host web application asks it to, and a demo application that stands in for that host.
-The capture feasibility spike is proven and reported, and the demo that sells the concept is built: each chunk uploads to a demo backend that remuxes with ffmpeg and plays it back; the application contract waits behind it.
+The capture feasibility spike is proven and reported, and the demo that sells the concept is built: each chunk uploads to a demo backend in Go that remuxes with ffmpeg and plays it back; the application contract waits behind it.
 [README.md](README.md) is the user-facing description; read it first and keep it true when behaviour changes.
 This file is the rest: how to work here, and what has already been decided.
 
@@ -24,8 +24,8 @@ The prek hook enforces the line rule; the rest is on you.
 - **Decisions, not options.** Surface the alternatives you rejected in one line each, then recommend.
 - **`prek` must pass.** `./provision.sh` installs the hooks; `./build.sh check` runs them over every file and then `tsc`, and it must pass before you claim done.
   `prek run --all-files` means every tracked file, so `git add` a new file before `./build.sh check` or the commit hook will be the first thing to see it.
-- **The dependency budget is TypeScript, Vite and Playwright**, plus type-only packages.
-  Adding anything else is a decision to raise, not a line in `package.json`.
+- **The dependency budget is TypeScript, Vite and Playwright**, plus type-only packages, and for the backend the Go standard library and nothing else.
+  Adding anything else is a decision to raise, not a line in `package.json` or `go.mod`.
   `ffmpeg` is a tool on the Mac that `provision.sh` installs, used by the demo backend and the tests, not a package.
 - **Never disable a hook to get past it.** Shellcheck runs at its default severity, so `A && B || true` is flagged; write an `if`.
 - **Documentation tasks are documentation-only.** When the task is to record something, the deliverable is the document; offer the implementation as a next step and wait.
@@ -52,7 +52,9 @@ The prek hook enforces the line rule; the rest is on you.
 
 ```text
 build.sh                  build | test | fmt | check | clean; `./build.sh nonsense` prints help
-provision.sh              a development Mac: the toolchain, npm, Playwright's Chromium, the git hooks
+provision.sh              a development Mac: the toolchain, npm, Go, Playwright's Chromium, the git hooks
+backend/                  the demo backend in Go, standard library only: the recordings API, the ffmpeg remux, the demo pages embedded
+  static/                 where build.sh copies dist/demo for go:embed; only .gitkeep is tracked
 src/
   shared/protocol.ts      the messages between page, content script, service worker and offscreen document
   extension/              the Manifest V3 extension: service worker, content script, offscreen document, console page
@@ -69,7 +71,6 @@ scripts/
   check-one-sentence-per-line.sh   the markdown line rule, wired into prek
   lib/output.sh                    the shared print_* helpers every script sources
   lib/one-sentence-per-line.awk    the check itself, in awk so it needs no toolchain
-  demo/serve.mjs                   the demo backend: the demo on 5173 with the recordings API, the packed extension on 8765
   demo/chrome.sh                   a real Chrome on a throwaway profile, the extension's id allowlisted for capture
   spike/pack.sh                    packs a .crx with Chrome and writes the update manifest
   spike/policy.sh                  install | show | remove the force-install policy on this Mac
@@ -96,17 +97,17 @@ docs/
 | `scripts/gh-agent.sh <gh args>` | Runs `gh` as `njoubert-agents` for one call, without switching the active account |
 | `scripts/pr-review.sh fetch [PR]` | The inline review threads `gh pr view --comments` does not show |
 | `scripts/pr-review.sh reply THREAD_ID BODY` | Answers one thread, as the agent account |
-| `./build.sh` | Vite builds the extension into `dist/extension` and the demo into `dist/demo` |
+| `./build.sh` | Vite builds the extension into `dist/extension` and the demo into `dist/demo`, then Go builds the backend into `dist/backend` with the demo embedded |
 | `./build.sh test` | Playwright runs `tests/`, headed, against the built extension; `NIMBUS_ALLOWLIST=0` runs the gesture ladder instead of the launch flag |
-| `./build.sh check` | The gate CI runs: `prek run --all-files`, then `tsc --noEmit` |
-| `./build.sh fmt` | Declared and does nothing; no formatter is in the budget yet |
+| `./build.sh check` | The gate CI runs: `prek run --all-files`, then `tsc --noEmit`, then `gofmt -l` and `go vet` over the backend |
+| `./build.sh fmt` | `gofmt` over the backend; nothing for TypeScript or markdown yet |
 | `./build.sh clean` | Removes `dist`, `test-results` and `playwright-report` |
-| `node scripts/demo/serve.mjs` | The demo backend, which Playwright also starts for the tests; recordings live in `.build-demo/recordings/` |
+| `dist/backend/nimbus-demo-backend` | The demo backend, which Playwright also starts for the tests; recordings live in `.build-demo/recordings/`, and `-static dist/demo` serves the pages from disk while editing them |
 | `scripts/demo/chrome.sh` | Google Chrome on a throwaway profile with the allowlist flag; the extension is loaded unpacked by hand, once |
 | `scripts/demo/chrome.sh --chromium` | The same demo in Playwright's Chromium, for a managed Mac whose Chrome policy blocks extensions |
 | `scripts/spike/*` | The managed-path tools; each reads its own `# Usage:` header |
 
-**`fmt` is declared and does nothing**, because no formatter is in the budget; it is one function in `build.sh` with a TODO.
+**`fmt` runs `gofmt` and nothing else**, because no TypeScript or markdown formatter is in the budget; the rest is a TODO in that function in `build.sh`.
 
 **Traps the spike found**, each with its record in [docs/reports/2026-09-09-2343-capture-feasibility-spike.md](docs/reports/2026-09-09-2343-capture-feasibility-spike.md):
 
