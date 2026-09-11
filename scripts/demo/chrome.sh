@@ -16,8 +16,8 @@
 # for Testing build that takes --load-extension from the command line and did not read a policy
 # written to com.google.Chrome when measured on 2026-09-10. ./provision.sh installs it.
 #
-# The demo itself needs `./build.sh` and `node scripts/demo/serve.mjs` running first; delete
-# .build-chrome to start clean.
+# The demo itself needs `./build.sh` and `dist/backend/nimbus-demo-backend` running first;
+# delete .build-chrome to start clean.
 #
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."

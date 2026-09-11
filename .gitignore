@@ -23,6 +23,10 @@ build/
 # Node
 node_modules/
 
+# The demo pages build.sh copies into the Go module for go:embed; .gitkeep holds the directory.
+backend/static/*
+!backend/static/.gitkeep
+
 # Playwright
 test-results/
 playwright-report/
