@@ -67,7 +67,9 @@ do_build() {
     stage "building the demo backend"
     require_go
     rm -rf backend/static
-    cp -R "$BUILD_DIR/demo" backend/static
+    mkdir backend/static
+    cp -R "$BUILD_DIR/demo/." backend/static/
+    touch backend/static/.gitkeep
     (cd backend && go build -o "../$BUILD_DIR/backend/nimbus-demo-backend" .)
     print_success "backend: $BUILD_DIR/backend/nimbus-demo-backend"
     result "built into $BUILD_DIR"
