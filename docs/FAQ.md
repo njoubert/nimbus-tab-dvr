@@ -60,7 +60,7 @@ The encoder consumes them as they arrive and emits one encoded chunk per timesli
 Memory holds at most the timeslice being encoded, so a one hour recording uses no more memory than a one minute one.
 The encoding is Chrome's own, `MediaRecorder` in the offscreen document; nothing is transcoded, and the chunks concatenate into the exact WebM the encoder produced.
 Once a chunk is durable it is uploaded, in sequence, one in flight at a time, and its record in IndexedDB moves from queued to uploaded.
-A `MediaRecorder` WebM carries no duration and no seek index, so the backend remuxes the concatenated chunks once, with `ffmpeg -c copy`, into a file with both; that is the client's backend's job and the demo backend shows it.
+A `MediaRecorder` WebM carries no duration and no seek index, so the backend remuxes the concatenated chunks once, with `ffmpeg -c copy`, into a file with both; that is the client's backend's job, and the demo backend in [`backend/`](../backend/), Go with the standard library only, is the reference implementation of it.
 
 ## Chunks arrive on the server; what if the server is down or slammed?
 

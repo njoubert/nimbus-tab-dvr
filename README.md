@@ -16,7 +16,7 @@
 ./build.sh test           # Playwright drives the extension in a real Chromium and prints its findings
 ./build.sh check          # the gate CI runs: prek over every file, then tsc
 ./build.sh clean          # remove build products
-node scripts/demo/serve.mjs   # the demo backend: the demo on 5173 with the recordings API, the packed extension on 8765
+dist/backend/nimbus-demo-backend   # the demo backend, Go: the demo pages embedded, the recordings API on 5173, the packed extension on 8765
 scripts/demo/chrome.sh        # a real Chrome on a throwaway profile, with the extension's id allowlisted for capture; --chromium for a managed Mac
 ```
 
@@ -41,7 +41,8 @@ Capture is granted per tab, by one press of Cmd+Shift+Y or by the allowlist flag
 | [`provision.sh`](provision.sh) | Everything a fresh machine needs, re-runnable |
 | [`src/extension/`](src/extension/) | The extension: service worker, content script, offscreen recorder, IndexedDB spool, console page |
 | [`src/demo/`](src/demo/) | The demo host: a landing page that lists and plays the backend's recordings, then a page with a canvas, a YouTube embed and a Done button |
-| [`scripts/demo/`](scripts/demo/) | The demo backend and the Chrome launcher |
+| [`backend/`](backend/) | The demo backend in Go, the reference implementation of the upload contract |
+| [`scripts/demo/`](scripts/demo/) | The Chrome launcher for the demo |
 | [`tests/`](tests/) | The spike and the demo as Playwright tests |
 | [`scripts/`](scripts/) | The checks, the two-account GitHub wrappers, the spike's packing and policy tools, and the shared output helpers |
 | [`docs/`](docs/) | The writing style, the design questions, the system diagram, [the FAQ](docs/FAQ.md), and the plans, reports and research |
@@ -49,20 +50,21 @@ Capture is granted per tab, by one press of Cmd+Shift+Y or by the allowlist flag
 
 ## Running the demo
 
-1. `./build.sh`, then `node scripts/demo/serve.mjs` in a terminal that stays open.
+1. `./build.sh`, then `dist/backend/nimbus-demo-backend` in a terminal that stays open.
 2. `scripts/demo/chrome.sh` launches Google Chrome on a throwaway profile with the extension's id allowlisted for tab capture.
    The branded Chrome ignores `--load-extension`, so on the first launch it opens `chrome://extensions`: turn on Developer mode, press Load unpacked and pick `dist/extension`, once; the profile remembers it.
 3. On the landing page press Start.
    The recording page records itself; a second tab on the landing page shows the chunks landing; a reload of the recording page rejoins its recording; closing the tab still lands it; Done finalizes it, and Play scrubs it.
 
 On a managed Mac whose Chrome policy blocks extensions, `scripts/demo/chrome.sh --chromium` runs the demo in Playwright's Chromium instead, which takes the extension from the command line and reads no Google Chrome policy; every Google Chrome channel or copy on that Mac would read the same policies and inherit the block.
-The demo backend keeps its recordings in `.build-demo/recordings/` and needs `ffmpeg` on the path, which `./provision.sh` installs.
+The demo backend is one Go binary with the demo pages embedded; it keeps its recordings in `.build-demo/recordings/` and needs `ffmpeg` on the path, which `./provision.sh` installs.
+It is also the reference implementation of the upload contract, written in the client's language so their backend can be read against it: [`backend/`](backend/), standard library only.
 A fleet's Chrome is not launched with the flag; there, one press of Cmd+Shift+Y on the tab is what allows capture, and the recording page says so when it is needed.
 
 ## What is not here yet
 
 **No retries, no authorization, no application contract beyond what the demo speaks, no formatter.**
-The backend in this repository stands in for the client's; a backend that is down leaves the recording in IndexedDB, where the console page can still assemble it.
+The backend in this repository stands in for the client's and shows the contract theirs implements; a backend that is down leaves the recording in IndexedDB, where the console page can still assemble it.
 [docs/FAQ.md](docs/FAQ.md) answers the questions a reader asks after the demo, [docs/GRILLING.md](docs/GRILLING.md) holds the design questions with their answers so far, and [docs/plans/](docs/plans/) holds what is built next.
 
 ## Licence

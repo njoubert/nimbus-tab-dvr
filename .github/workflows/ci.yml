@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
       - name: Install prek
         run: pipx install prek
       - name: Install node modules
@@ -36,6 +39,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
       - name: Install node modules
         run: npm ci --no-audit --no-fund
       - name: Install Playwright's Chromium

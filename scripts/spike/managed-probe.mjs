@@ -8,7 +8,7 @@
 // managed configuration it sees, and whether capture is granted without a gesture.
 //
 // Usage: node scripts/spike/managed-probe.mjs [extra Chrome flags...]
-// Needs: scripts/spike/policy.sh install, and node scripts/demo/serve.mjs running.
+// Needs: scripts/spike/policy.sh install, and dist/backend/nimbus-demo-backend running.
 // The profile is wiped on every run unless KEEP_PROFILE=1, which is how an extension loaded
 // unpacked by hand in that profile survives to the next run.
 

@@ -9,7 +9,8 @@
 #   ./build.sh clean        remove build products
 #
 # The language is TypeScript: Vite builds the extension and the demo, Playwright runs the
-# tests, and `check` adds tsc to the prek hooks. `fmt` is still declared and does nothing.
+# tests, and `check` adds tsc to the prek hooks. The demo backend is Go, standard library
+# only, built into dist/backend with the demo pages embedded. `fmt` runs gofmt and nothing else yet.
 #
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
@@ -35,6 +36,14 @@ require_node_modules() {
     fi
 }
 
+require_go() {
+    if ! command_exists go; then
+        print_error "go is not installed"
+        print_info "run ./provision.sh, or: brew install go"
+        exit 1
+    fi
+}
+
 do_build() {
     print_header "Building $NAME"
     require_node_modules
@@ -53,14 +62,24 @@ do_build() {
     stage "bundling the demo application"
     npx vite build --config vite.demo.config.ts --logLevel warn
     print_success "demo: $BUILD_DIR/demo"
+
+    # go:embed cannot reach outside the module directory, so the built pages are copied in.
+    stage "building the demo backend"
+    require_go
+    rm -rf backend/static
+    mkdir backend/static
+    cp -R "$BUILD_DIR/demo/." backend/static/
+    touch backend/static/.gitkeep
+    (cd backend && go build -o "../$BUILD_DIR/backend/nimbus-demo-backend" .)
+    print_success "backend: $BUILD_DIR/backend/nimbus-demo-backend"
     result "built into $BUILD_DIR"
 }
 
 do_test() {
     print_header "Testing $NAME"
     require_node_modules
-    if [ ! -f "$BUILD_DIR/extension/manifest.json" ]; then
-        print_error "$BUILD_DIR/extension is missing; run ./build.sh first"
+    if [ ! -f "$BUILD_DIR/extension/manifest.json" ] || [ ! -x "$BUILD_DIR/backend/nimbus-demo-backend" ]; then
+        print_error "$BUILD_DIR is incomplete; run ./build.sh first"
         exit 1
     fi
     stage "running Playwright"
@@ -71,11 +90,14 @@ do_test() {
 
 do_fmt() {
     print_header "Formatting"
-    stage "formatting"
-    # TODO: no formatter is in the dependency budget yet. Markdown reflow belongs here too,
-    # once scripts/check-one-sentence-per-line.sh grows a --fix.
-    declared_only "fmt"
-    result "nothing to format yet"
+    stage "formatting the backend"
+    require_go
+    gofmt -w backend
+    print_success "gofmt over backend/"
+    # TODO: no TypeScript formatter is in the dependency budget yet. Markdown reflow belongs
+    # here too, once scripts/check-one-sentence-per-line.sh grows a --fix.
+    declared_only "fmt for TypeScript and markdown"
+    result "formatted"
 }
 
 do_check() {
@@ -98,6 +120,17 @@ do_check() {
     require_node_modules
     npx tsc --noEmit
     print_success "tsc passed"
+
+    stage "checking the backend"
+    require_go
+    unformatted=$(gofmt -l backend)
+    if [ -n "$unformatted" ]; then
+        print_error "gofmt would change: $unformatted"
+        print_info "run ./build.sh fmt"
+        exit 1
+    fi
+    (cd backend && go vet ./...)
+    print_success "gofmt and go vet passed"
     result "checks passed"
 }
 

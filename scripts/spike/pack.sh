@@ -49,6 +49,6 @@ cat > dist/pack/updates.xml <<EOF
 </gupdate>
 EOF
 print_success "dist/pack/updates.xml points at $UPDATE_URL/nimbus-tab-dvr.crx"
-print_info "serve it with: node scripts/demo/serve.mjs"
+print_info "serve it with: dist/backend/nimbus-demo-backend"
 print_info "force-install it with: scripts/spike/policy.sh install"
 result "packed $id $version"

@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: [['list']],
   outputDir: 'test-results',
   webServer: {
-    command: 'node scripts/demo/serve.mjs',
+    command: 'dist/backend/nimbus-demo-backend',
     url: 'http://localhost:5173/',
     reuseExistingServer: true,
     timeout: 30_000,
