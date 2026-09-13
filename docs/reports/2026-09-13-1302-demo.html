@@ -1,0 +1,224 @@
+<title>The Demo Report</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:wght@600&display=swap">
+<style>
+  :root { --ground: #f6f5f1; --paper: #fdfcf9; --ink: #1f2124; --ink-2: #5a5e66; --rule: #d9d6cf; --record: #c8322b; --granted: #2b7a4b; --refused: #a04a1c; --chunk: #b8460e; --tint: #ece9e1; --code: #efece5; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ground: #17181b; --paper: #1e2024; --ink: #e8e6e0; --ink-2: #a3a39c; --rule: #34373d; --record: #ef5a4f; --granted: #5fc68a; --refused: #e8935a; --chunk: #ee8f55; --tint: #26292e; --code: #24272c; } }
+  :root[data-theme="dark"] { --ground: #17181b; --paper: #1e2024; --ink: #e8e6e0; --ink-2: #a3a39c; --rule: #34373d; --record: #ef5a4f; --granted: #5fc68a; --refused: #e8935a; --chunk: #ee8f55; --tint: #26292e; --code: #24272c; }
+  body { background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-size: 16px; line-height: 1.55; padding-inline: 20px; padding-block: 40px 64px; }
+  main { max-width: 860px; margin: 0 auto; }
+  h1, h2 { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600; text-wrap: balance; line-height: 1.2; }
+  h1 { font-size: 1.9rem; margin: 0 0 8px; }
+  h2 { font-size: 1.3rem; margin: 44px 0 12px; }
+  p, li { max-width: 68ch; }
+  .eyebrow { font-family: "IBM Plex Mono", Menlo, monospace; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .eyebrow .rec::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--record); margin-right: 6px; vertical-align: 1px; }
+  .beats { list-style: none; padding: 0; margin: 20px 0; border: 1px solid var(--rule); background: var(--paper); counter-reset: beat; }
+  .beats li { display: grid; grid-template-columns: 2.2rem 1fr auto; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .beats li::before { counter-increment: beat; content: counter(beat); font-family: "IBM Plex Mono", Menlo, monospace; color: var(--ink-2); font-size: 0.85rem; }
+  .beats li:last-child { border-bottom: 0; }
+  .beats .how { font-size: 0.9rem; color: var(--ink-2); }
+  .beats .n { font-family: "IBM Plex Mono", Menlo, monospace; font-size: 0.85rem; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .ok { color: var(--granted); font-weight: 600; } .no { color: var(--refused); font-weight: 600; } .na { color: var(--ink-2); }
+  code, pre { font-family: "IBM Plex Mono", Menlo, monospace; font-size: 0.86em; }
+  code { background: var(--code); padding: 1px 5px; border-radius: 3px; }
+  pre { background: var(--code); padding: 14px 16px; overflow-x: auto; margin: 12px 0 20px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.93rem; font-variant-numeric: tabular-nums; background: var(--paper); }
+  .scroll { overflow-x: auto; margin: 12px 0 20px; border: 1px solid var(--rule); }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 500; color: var(--ink-2); font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; background: var(--tint); }
+  tr:last-child td { border-bottom: 0; } td.num { text-align: right; white-space: nowrap; }
+  figure { margin: 20px 0 28px; }
+  figure svg { width: 100%; height: auto; display: block; background: var(--paper); border: 1px solid var(--rule); }
+  figcaption { font-size: 0.88rem; color: var(--ink-2); margin-top: 8px; max-width: 68ch; }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .two h3 { font-family: "IBM Plex Mono", Menlo, monospace; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 8px; font-weight: 500; }
+  .two ul { margin: 0; padding-left: 18px; }
+  .two li { margin-bottom: 8px; }
+  .found { border-left: 3px solid var(--rule); padding-left: 16px; margin: 16px 0; }
+  .found p { margin: 6px 0; }
+  a { color: inherit; text-decoration-color: var(--record); text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--record); outline-offset: 2px; }
+  .colophon { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--ink-2); font-family: "IBM Plex Mono", Menlo, monospace; }
+</style>
+<main>
+  <div class="eyebrow"><span class="rec">Report</span><span>2026-09-13 13:02</span><span>nimbus-tab-dvr</span><span>main at e5886ed</span></div>
+  <h1>The demo: every chunk lands as it is encoded, and the fleet's Chrome takes the flag</h1>
+  <p>Follows <a href="https://github.com/njoubert/nimbus-tab-dvr/blob/main/docs/reports/2026-09-10-0005-gesture-ladder.md">the gesture ladder</a>, which measured the one press per tab; executes <a href="https://github.com/njoubert/nimbus-tab-dvr/blob/main/docs/plans/2026-09-10-demo.md">the demo plan</a>.</p>
+
+  <h2>Summary</h2>
+  <p>The demo that sells the concept is built, tested and run by hand, and nothing in it is faked. A recording page records itself through the extension, every two-second chunk is on the backend before the next one is encoded, a reload of the page rejoins the same recording, a closed tab still lands with every chunk, and the landing page plays the result with a working scrubber and the embed's audio in it.</p>
+  <p>Two facts the plan left open were settled on the way: Google Chrome 153 honours <code>--allowlisted-extension-id</code> for an extension loaded unpacked, so the demo runs in the fleet's own browser with no press of the shortcut, and Playwright's Chromium ignores a policy written to Google Chrome's domain, so a managed Mac that blocks extensions can still run the demo. The backend was then rewritten in Go as the reference implementation of the upload contract, and the same tests pass against it. Niels ran the seven beats on real Chrome on 2026-09-13 and reported every one as scripted.</p>
+
+  <h2>How a recording moves</h2>
+  <figure>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 700" role="img" aria-label="A host page asks the extension's content script to start; the service worker validates the origin, asks Chrome for a tab capture stream id, and hands it to an offscreen document that encodes with MediaRecorder, writes every chunk to IndexedDB, then uploads it in order to the demo backend, which remuxes with ffmpeg at stop into a seekable file that the landing page plays." style="color: var(--ink);">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker>
+        <marker id="arrow-chunk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--chunk)"/></marker>
+      </defs>
+      <g font-family="IBM Plex Sans, system-ui, sans-serif" fill="currentColor">
+        <text x="20" y="34" font-size="12" fill="var(--ink-2)">One tab, one recording at a time. Every chunk is durable in the browser before it is uploaded, in order; the orange path is the chunk's.</text>
+        <rect x="460" y="60" width="340" height="72" rx="6" fill="var(--tint)" stroke="currentColor"/>
+        <text x="475" y="83" font-size="13" font-weight="600">Chrome: chrome.tabCapture</text>
+        <text x="475" y="101" font-size="11">issues a stream id for a tab the user has invoked once,</text>
+        <text x="475" y="117" font-size="11">or for the id given as --allowlisted-extension-id</text>
+        <rect x="20" y="60" width="340" height="330" rx="10" fill="none" stroke="var(--rule)" stroke-dasharray="6 4"/>
+        <text x="32" y="80" font-size="12" font-style="italic" fill="var(--ink-2)">Browser tab, on an origin the configuration allows</text>
+        <rect x="35" y="95" width="310" height="95" rx="6" fill="var(--paper)" stroke="currentColor"/>
+        <text x="50" y="120" font-size="13" font-weight="600">Host application page</text>
+        <text x="50" y="140" font-size="11">the demo: a canvas, a YouTube embed, Done</text>
+        <text x="50" y="158" font-size="11">asks GET_RECORDING_STATUS on load, rejoins</text>
+        <rect x="35" y="270" width="310" height="95" rx="6" fill="var(--paper)" stroke="currentColor"/>
+        <text x="50" y="295" font-size="13" font-weight="600">Content script</text>
+        <text x="50" y="315" font-size="11">relays requests; posts replies and events</text>
+        <text x="50" y="333" font-size="11">a classic script with nothing to misuse</text>
+        <line x1="110" y1="190" x2="110" y2="270" stroke="currentColor" marker-end="url(#arrow)"/>
+        <line x1="290" y1="270" x2="290" y2="190" stroke="currentColor" marker-end="url(#arrow)"/>
+        <text x="200" y="216" font-size="11" text-anchor="middle">window.postMessage</text>
+        <text x="200" y="232" font-size="11" text-anchor="middle">↓ START, STOP, GET_STATUS</text>
+        <text x="200" y="248" font-size="11" text-anchor="middle">↑ replies: key and recording id</text>
+        <rect x="420" y="160" width="440" height="520" rx="10" fill="none" stroke="var(--rule)" stroke-dasharray="6 4"/>
+        <text x="848" y="672" font-size="12" font-style="italic" fill="var(--ink-2)" text-anchor="end">Extension, Manifest V3</text>
+        <rect x="440" y="195" width="400" height="110" rx="6" fill="var(--paper)" stroke="currentColor"/>
+        <text x="455" y="220" font-size="13" font-weight="600">Service worker: the control plane</text>
+        <text x="455" y="240" font-size="11">validates origin and message; one recording per tab</text>
+        <text x="455" y="258" font-size="11">state in chrome.storage.session; Chrome stops it at will</text>
+        <text x="455" y="276" font-size="11">tabs.onRemoved stops a recording whose tab closed</text>
+        <line x1="520" y1="195" x2="520" y2="132" stroke="currentColor" marker-end="url(#arrow)"/>
+        <line x1="760" y1="132" x2="760" y2="195" stroke="currentColor" marker-end="url(#arrow)"/>
+        <text x="640" y="158" font-size="11" text-anchor="middle">↑ getMediaStreamId(tabId)</text>
+        <text x="640" y="176" font-size="11" text-anchor="middle">↓ stream id, or refused</text>
+        <line x1="345" y1="280" x2="440" y2="280" stroke="currentColor" marker-end="url(#arrow)"/>
+        <line x1="440" y1="300" x2="345" y2="300" stroke="currentColor" marker-end="url(#arrow)"/>
+        <text x="392" y="272" font-size="11" text-anchor="middle">sendMessage →</text>
+        <text x="392" y="318" font-size="11" text-anchor="middle">← events</text>
+        <rect x="440" y="370" width="400" height="130" rx="6" fill="var(--paper)" stroke="currentColor"/>
+        <text x="455" y="395" font-size="13" font-weight="600">Offscreen document: the data plane</text>
+        <text x="455" y="415" font-size="11">getUserMedia(stream id) → MediaRecorder, VP9 + Opus WebM</text>
+        <text x="455" y="433" font-size="11">one timeslice = one chunk; audio replayed to the speakers</text>
+        <text x="455" y="451" font-size="11">writes the chunk, then uploads it: in order, one in flight</text>
+        <text x="455" y="469" font-size="11">after the last upload, posts stop and reports finalized</text>
+        <line x1="560" y1="305" x2="560" y2="370" stroke="currentColor" marker-end="url(#arrow)"/>
+        <line x1="720" y1="370" x2="720" y2="305" stroke="currentColor" marker-end="url(#arrow)"/>
+        <text x="640" y="332" font-size="11" text-anchor="middle">↓ start(stream id), stop, status</text>
+        <text x="640" y="350" font-size="11" text-anchor="middle">↑ capture ended, finalized</text>
+        <rect x="440" y="575" width="260" height="75" rx="8" fill="var(--paper)" stroke="currentColor"/>
+        <text x="455" y="600" font-size="13" font-weight="600">IndexedDB spool</text>
+        <text x="455" y="620" font-size="11">every chunk, queued then uploaded</text>
+        <text x="455" y="638" font-size="11">survives a killed offscreen document</text>
+        <line x1="560" y1="500" x2="560" y2="575" stroke="var(--chunk)" stroke-width="1.5" marker-end="url(#arrow-chunk)"/>
+        <text x="572" y="542" font-size="11" fill="var(--chunk)">write the chunk first</text>
+        <rect x="920" y="160" width="300" height="150" rx="10" fill="none" stroke="var(--rule)" stroke-dasharray="6 4"/>
+        <text x="932" y="180" font-size="12" font-style="italic" fill="var(--ink-2)">A second browser tab</text>
+        <rect x="930" y="195" width="280" height="95" rx="6" fill="var(--paper)" stroke="currentColor"/>
+        <text x="945" y="220" font-size="13" font-weight="600">Landing page</text>
+        <text x="945" y="240" font-size="11">lists the recordings and plays one</text>
+        <text x="945" y="258" font-size="11">chunks and bytes tick while one is live</text>
+        <text x="945" y="276" font-size="11">the scrubber works: the file has cues</text>
+        <rect x="920" y="372" width="300" height="308" rx="10" fill="none" stroke="var(--rule)" stroke-dasharray="6 4"/>
+        <text x="932" y="392" font-size="12" font-style="italic" fill="var(--ink-2)">Demo backend, a stand-in for the client's</text>
+        <rect x="930" y="405" width="280" height="120" rx="6" fill="var(--paper)" stroke="currentColor"/>
+        <text x="945" y="430" font-size="13" font-weight="600">Recordings API, Go, stdlib only</text>
+        <text x="945" y="450" font-size="11">stores chunk n under recordings/id/</text>
+        <text x="945" y="468" font-size="11">stop: concatenate, then ffmpeg -c copy</text>
+        <text x="945" y="486" font-size="11">serves the list, and the file in ranges</text>
+        <text x="945" y="504" font-size="11">same origin as the demo, so no CORS</text>
+        <rect x="930" y="575" width="280" height="75" rx="8" fill="var(--paper)" stroke="currentColor"/>
+        <text x="945" y="600" font-size="13" font-weight="600">recording.webm</text>
+        <text x="945" y="620" font-size="11">duration and cues, written by ffmpeg</text>
+        <text x="945" y="638" font-size="11">seekable in a video element</text>
+        <line x1="1070" y1="525" x2="1070" y2="575" stroke="var(--chunk)" stroke-width="1.5" marker-end="url(#arrow-chunk)"/>
+        <text x="1082" y="555" font-size="11" fill="var(--chunk)">remux at stop</text>
+        <line x1="1010" y1="290" x2="1010" y2="405" stroke="currentColor" marker-end="url(#arrow)"/>
+        <line x1="1130" y1="405" x2="1130" y2="290" stroke="currentColor" marker-end="url(#arrow)"/>
+        <text x="1070" y="332" font-size="11" text-anchor="middle">↓ list, every second</text>
+        <text x="1070" y="350" font-size="11" text-anchor="middle">↑ file, in ranges</text>
+        <line x1="840" y1="420" x2="930" y2="420" stroke="var(--chunk)" stroke-width="1.5" marker-end="url(#arrow-chunk)"/>
+        <text x="885" y="412" font-size="11" text-anchor="middle" fill="var(--chunk)">POST chunk</text>
+        <line x1="840" y1="460" x2="930" y2="460" stroke="currentColor" marker-end="url(#arrow)"/>
+        <text x="885" y="452" font-size="11" text-anchor="middle">POST stop</text>
+      </g>
+    </svg>
+    <figcaption>The page is the trust boundary: the service worker validates the origin and the shape of every message before acting, and the page never holds a channel to the extension. The same drawing is <a href="https://github.com/njoubert/nimbus-tab-dvr/blob/main/docs/how-it-works.svg">docs/how-it-works.svg</a>.</figcaption>
+  </figure>
+
+  <h2>The flag holds on branded Chrome, unpacked</h2>
+  <p><strong>Google Chrome 153.0.8010.37 issued a stream id with no shortcut pressed</strong>, measured on 2026-09-10 in the throwaway profile <code>scripts/demo/chrome.sh</code> keeps, with <code>dist/extension</code> loaded through Developer mode and Load unpacked, and Chrome launched with <code>--allowlisted-extension-id=oibiheibjolbkmifdocjhkfalginaofm</code>. The probe on the landing page answered <span class="ok">Chrome issued a stream id</span> on a fresh tab. The spike had proven the flag on Playwright's Chromium only; the branded build reads it the same way. Chrome's banner about an unsupported command-line flag is what it shows for any switch outside its supported set and says nothing about whether the switch is honoured.</p>
+  <p>The fleet's Chrome is not launched with the flag, so the deployment answer is unchanged: one press of Cmd+Shift+Y per tab, unless the client starts Chrome through a launcher that passes the flag.</p>
+
+  <h2>The beats, as the test measured them</h2>
+  <p><code>tests/demo.spec.ts</code> runs the four beats in Playwright's Chromium 153.0.8010.12 with the flag, at a one second timeslice, against the backend Playwright starts. What it printed on 2026-09-10 against the Node backend at <a href="https://github.com/njoubert/nimbus-tab-dvr/commit/6495209">6495209</a>:</p>
+  <ul class="beats">
+    <li><div>Chunks land while recording<div class="how">2 chunks, 368,462 bytes on the backend, state <code>recording</code>, before Done</div></div><div class="n"><span class="ok">landed</span></div></li>
+    <li><div>Done to finalized<div class="how">3 chunks, 426,984 bytes; the served file is 2.11 s by ffprobe, the backend says 2.113</div></div><div class="n">238 ms</div></li>
+    <li><div>Reload mid-recording<div class="how"><code>RECORDING_STATUS</code> for the same id with 2 chunks and 2 uploaded; the one recording finished with 4 chunks, 3.323 s</div></div><div class="n"><span class="ok">rejoined</span></div></li>
+    <li><div>Close the tab<div class="how">3 chunks, 3.084 s, reason <code>capture-ended</code></div></div><div class="n">280 ms</div></li>
+  </ul>
+  <p>The same file against the Go backend at <a href="https://github.com/njoubert/nimbus-tab-dvr/commit/d5ba987">d5ba987</a>: the closed tab finalized 301 ms later with 3 chunks, 2.071 s. <code>tests/spike.spec.ts</code> passes unchanged in substance, with its reload step rewritten to expect the rejoin rather than the spike's <code>ALREADY_RECORDING</code>.</p>
+
+  <h2>The dry run on real Chrome</h2>
+  <p>On 2026-09-13 Niels ran the seven beats of the plan's script in Google Chrome 153.0.8010.37 against the Go backend at <a href="https://github.com/njoubert/nimbus-tab-dvr/commit/e5886ed">e5886ed</a>, the extension loaded unpacked and the flag on: the probe granted, Start recorded with the embed's sound playing, the count ticked on a second tab, the reload rejoined, the closed tab finalized, Done finalized and returned to the landing page, and Play scrubbed with the audio in the file. He reported all seven as scripted. No timings were taken by hand; the numbers above are the test's.</p>
+
+  <h2>What the code met that the plan did not say</h2>
+  <div class="found">
+    <p><strong>A closing tab ends the captured track before <code>tabs.onRemoved</code> fires.</strong> The plan had the service worker stop the recording on that event; in every measured close the offscreen document had already finished on the track's <code>ended</code> event. Both paths now end in the same finished record and neither treats the other's win as a failure, which is why the backend's reason reads <code>capture-ended</code>.</p>
+  </div>
+  <div class="found">
+    <p><strong>The macOS CI runner has no ffmpeg.</strong> The first run failed with the backend row reading <code>failed (ffmpeg: spawn ffmpeg ENOENT)</code>, so no stop finalized and both tests waited on an event that never came. The build job now installs ffmpeg with Homebrew, the demo test accepts a finalize that lands before its stop assertion, and the spike test's navigation wait outlasts the recording page's ten second fallback; <a href="https://github.com/njoubert/nimbus-tab-dvr/actions/runs/34523690547">run 34523690547</a> is green.</p>
+  </div>
+  <div class="found">
+    <p><strong>The build deleted the embed placeholder.</strong> <code>go:embed</code> cannot reach outside the module, so <code>build.sh</code> copies <code>dist/demo</code> into <code>backend/static</code>; its <code>rm -rf</code> removed the tracked <code>.gitkeep</code> before the commit, and a fresh checkout in CI had no file for the pattern to match. The copy now recreates the directory and touches the placeholder; <a href="https://github.com/njoubert/nimbus-tab-dvr/actions/runs/34570012657">run 34570012657</a> is green.</p>
+  </div>
+  <div class="found">
+    <p><strong>A merge can miss the last push.</strong> Pull request 5 was merged at the CI fix, before the Chromium launcher commit reached the branch; that commit went in on its own as pull request 6.</p>
+  </div>
+
+  <h2>A managed Mac that blocks extensions still runs the demo</h2>
+  <p><strong>Every Google Chrome channel and copy on a Mac reads the policies its MDM writes for <code>com.google.Chrome</code></strong>, so a second Chrome does not escape a block on extensions. <code>scripts/demo/chrome.sh --chromium</code> launches Playwright's Chromium, a Chrome for Testing build, with <code>--load-extension</code> and the flag, and needs no Load unpacked. Measured on 2026-09-10: with a marker policy, <code>HomepageLocation</code>, written to <code>com.google.Chrome</code> on the development Mac, a headed Chrome for Testing showed nothing on <code>chrome://policy</code>; the marker was removed afterwards. The positive control, the same marker in Chrome for Testing's own domain, was not run, so the claim rests on that negative and on macOS keying policy by bundle identifier.</p>
+
+  <h2>The backend is Go, as the reference implementation</h2>
+  <p><a href="https://github.com/njoubert/nimbus-tab-dvr/pull/8">Pull request 8</a> replaced <code>scripts/demo/serve.mjs</code> with a standard-library-only module at <code>backend/</code>: the same routes and JSON, <code>http.ServeFile</code> for ranges, ffmpeg for the remux, and the demo pages embedded so <code>dist/backend/nimbus-demo-backend</code> runs the whole demo as one file. By hand it answered chunk, stop, list, a 206 range response, the CORS preflight and delete as the Node server did, with a 6.347 s remux of a spike recording; all five tests pass against it.</p>
+
+  <h2>Verified and unverified</h2>
+  <div class="two">
+    <div>
+      <h3>Verified</h3>
+      <ul>
+        <li>The four beats in Playwright's Chromium, twice, against both backends, with the numbers above.</li>
+        <li>The flag on Google Chrome 153.0.8010.37 with the extension unpacked, by the probe.</li>
+        <li>The seven beats by hand on that Chrome, by Niels's report on 2026-09-13.</li>
+        <li>The Go backend's routes by hand and by the suite; CI green on both jobs for pull requests 5 and 8 after one fix each.</li>
+        <li>Chrome for Testing not reading a user-level marker policy in <code>com.google.Chrome</code>.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Unverified</h3>
+      <ul>
+        <li>Audio in the served file: the test checks duration only; Niels heard it on the dry run.</li>
+        <li>The Chromium launcher against a real MDM profile; a user-level marker on a development Mac, with no positive control.</li>
+        <li>A renderer crash mid-recording, and a cross-origin navigation, neither exercised.</li>
+        <li>The performance cost of capture on the client's application, unprofiled; <a href="https://github.com/njoubert/nimbus-tab-dvr/blob/main/docs/FAQ.md">the FAQ</a> names the levers.</li>
+        <li>Any recording longer than seconds.</li>
+        <li>A fresh laptop provisioned from scratch with Go and ffmpeg in the Homebrew list.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Provenance</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>What</th><th>Where</th></tr></thead>
+      <tbody>
+        <tr><td>The plan and the flag answer</td><td><a href="https://github.com/njoubert/nimbus-tab-dvr/commit/7cd2194">7cd2194</a></td></tr>
+        <tr><td>The demo</td><td><a href="https://github.com/njoubert/nimbus-tab-dvr/commit/6495209">6495209</a>, CI fix <a href="https://github.com/njoubert/nimbus-tab-dvr/commit/e01ad94">e01ad94</a></td></tr>
+        <tr><td>The Chromium launcher</td><td><a href="https://github.com/njoubert/nimbus-tab-dvr/commit/c129c97">c129c97</a></td></tr>
+        <tr><td>The Go backend</td><td><a href="https://github.com/njoubert/nimbus-tab-dvr/commit/d5ba987">d5ba987</a>, placeholder fix <a href="https://github.com/njoubert/nimbus-tab-dvr/commit/3fdcb5c">3fdcb5c</a></td></tr>
+        <tr><td>Main for the dry run</td><td><a href="https://github.com/njoubert/nimbus-tab-dvr/commit/e5886ed">e5886ed</a></td></tr>
+        <tr><td>Toolchain</td><td>Google Chrome 153.0.8010.37, Playwright 1.63 with Chromium 153.0.8010.12, Node 26.6.0, Go 1.26.4, ffmpeg 8.1.1, from <code>./provision.sh</code></td></tr>
+        <tr><td>Commands</td><td><code>./build.sh</code>, <code>./build.sh test</code>, <code>./build.sh check</code>, <code>scripts/demo/chrome.sh</code>, <code>dist/backend/nimbus-demo-backend</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="colophon">docs/reports/2026-09-13-1302-demo.md · written on main at e5886ed · <a href="https://github.com/njoubert/nimbus-tab-dvr">njoubert/nimbus-tab-dvr</a></div>
+</main>
